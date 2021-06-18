@@ -1,0 +1,37 @@
+= Red Hat GitOps Environment Setup
+Álvaro López Medina <alopezme@redhat.com>
+v1.0, 2021-06
+// Create TOC wherever needed
+:toc: macro
+:sectanchors:
+:sectnumlevels: 2
+:sectnums: 
+:source-highlighter: pygments
+:imagesdir: images
+// Start: Enable admonition icons
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+ifndef::env-github[]
+:icons: font
+endif::[]
+// End: Enable admonition icons
+
+This repository showcases how to deploy a basic Red Hat Git Ops environment
+
+// Create the Table of contents here
+toc::[]
+
+== Introduction
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque nulla felis, tincidunt ut blandit eget, luctus eu lorem. Nulla ultrices.
+
+
+== Prepare environment
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque nulla felis, tincidunt ut blandit eget, luctus eu lorem. Nulla ultrices.
+
