@@ -64,10 +64,18 @@ oc adm policy add-scc-to-user privileged -z default -n $OPERATOR_NAMESPACE
 # Deploy application instance
 oc process -f templates/nexus-02-server.yaml -p OPERATOR_NAMESPACE=$OPERATOR_NAMESPACE -p SERVER_NAME="nexus-server" | oc apply -f -
 
-# Expose the route
-oc expose svc nexus-server-sonatype-nexus-service -n $OPERATOR_NAMESPACE
 ----
 
+=== Helm repository
+
+Create a Helm repository with the following steps:
+
+* Access the Nexus route: `oc get routes nexus-server --template="https://{{.spec.host}}"`.
+* Log in using the admin credentials: `admin` / `admin123`.
+* Server Administration > Repositories > Create Repositories > "Helm(hosted)"
+** name: `helm-repository`.
+** DeploymentPolicy: `Allow redeploy`.
+* Click on `Create repository`.
 
 
 == Prepare environment for workshop
@@ -88,31 +96,4 @@ oc process -f templates/tekton-01-operator.yaml | oc apply -f -
 
 
 
-== Deploy workshop
 
-1) Edit `./env/lab.env` to set the correct OCP cluster.
-
-2) Deploy the workshop documentation and load basic images:
-[source, bash]
-----
-./ocp_import_imgs_cicd.sh
-./deploy_lab_pages.sh
-----
-
-3) Create workshop projects:
-[source, bash]
-----
-USER=alopezme
-for project in $USER-jump-app-dev $USER-jump-app-dev-k8s $USER-jump-app-dev-helm $USER-jump-app-pre $USER-jump-app-pro $USER-jump-app-cicd $USER-gitops-argocd; do
-  oc new-project $project
-done 
-----
-
-4) 
-[source, bash]
-----
-USER=alopezme
-oc process -f ./files/argocd_operator.yaml -p USERNAME=$USER | oc apply -f -
-sleep 30
-oc process -f ./files/argocd_objs.yaml -p USERNAME=$USER | oc apply -f -
-----

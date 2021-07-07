@@ -99,6 +99,21 @@ objects:
         type: NodePort
       hostAliases: []
       podAnnotations: {}
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    name: ${SERVER_NAME}
+    namespace: ${OPERATOR_NAMESPACE}
+  spec:
+    port:
+      targetPort: application
+    tls:
+      termination: edge
+      # insecureEdgeTerminationPolicy: Allow
+    to:
+      kind: Service
+      name: ${SERVER_NAME}-sonatype-nexus-service
+    wildcardPolicy: None
 parameters:
 - name: OPERATOR_NAMESPACE
   description: "The project where the operator will be installed."
