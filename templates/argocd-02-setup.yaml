@@ -1,0 +1,267 @@
+
+apiVersion: v1
+kind: Template
+metadata:
+  name: argocd-jump-app-gitops
+  annotations:
+    description: Template to deploy the Argo CD objects on OCP.
+    tags: argocd,gitops,operator
+    iconClass: icon-git
+    openshift.io/provider-display-name: Red Hat, Inc.
+    openshift.io/support-url: https://access.redhat.com
+objects:
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: Role
+    metadata:
+      name: secret-reader
+    rules:
+    - apiGroups: [""]
+      resources: ["secrets"]
+      verbs: ["get", "watch", "list"]
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: RoleBinding
+    metadata:
+      name: tekton-deployments-admin-view
+    subjects:
+      - kind: User
+        apiGroup: rbac.authorization.k8s.io
+        name: 'system:serviceaccount:${USERNAME}-jump-app-cicd:tekton-deployments-admin'
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: Role
+      name: secret-reader
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: RoleBinding
+    metadata:
+      name: tekton-pipeline-view
+    subjects:
+      - kind: User
+        apiGroup: rbac.authorization.k8s.io
+        name: 'system:serviceaccount:${USERNAME}-jump-app-cicd:pipeline'
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: Role
+      name: secret-reader
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: RoleBinding
+    metadata:
+      name: argocd-application-controller
+      namespace: ${USERNAME}-jump-app-dev-k8s
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: admin
+    subjects:
+    - kind: ServiceAccount
+      name: argocd-argocd-application-controller
+      namespace: ${USERNAME}-gitops-argocd
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: RoleBinding
+    metadata:
+      name: argocd-server
+      namespace: ${USERNAME}-jump-app-dev-k8s
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: admin
+    subjects:
+    - kind: ServiceAccount
+      name: argocd-argocd-server
+      namespace: ${USERNAME}-gitops-argocd
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: RoleBinding
+    metadata:
+      name: argocd-application-controller
+      namespace: ${USERNAME}-jump-app-dev-helm
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: admin
+    subjects:
+    - kind: ServiceAccount
+      name: argocd-argocd-application-controller
+      namespace: ${USERNAME}-gitops-argocd
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: RoleBinding
+    metadata:
+      name: argocd-server
+      namespace: ${USERNAME}-jump-app-dev-helm
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: admin
+    subjects:
+    - kind: ServiceAccount
+      name: argocd-argocd-server
+      namespace: ${USERNAME}-gitops-argocd
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: RoleBinding
+    metadata:
+      name: argocd-application-controller
+      namespace: ${USERNAME}-jump-app-dev
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: admin
+    subjects:
+    - kind: ServiceAccount
+      name: argocd-argocd-application-controller
+      namespace: ${USERNAME}-gitops-argocd
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: RoleBinding
+    metadata:
+      name: argocd-server
+      namespace: ${USERNAME}-jump-app-dev
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: admin
+    subjects:
+    - kind: ServiceAccount
+      name: argocd-argocd-server
+      namespace: ${USERNAME}-gitops-argocd
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: RoleBinding
+    metadata:
+      name: argocd-application-controller
+      namespace: ${USERNAME}-jump-app-pre
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: admin
+    subjects:
+    - kind: ServiceAccount
+      name: argocd-argocd-application-controller
+      namespace: ${USERNAME}-gitops-argocd
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: RoleBinding
+    metadata:
+      name: argocd-server
+      namespace: ${USERNAME}-jump-app-pre
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: admin
+    subjects:
+    - kind: ServiceAccount
+      name: argocd-argocd-server
+      namespace: ${USERNAME}-gitops-argocd
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: RoleBinding
+    metadata:
+      name: argocd-application-controller
+      namespace: ${USERNAME}-jump-app-pro
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: admin
+    subjects:
+    - kind: ServiceAccount
+      name: argocd-argocd-application-controller
+      namespace: ${USERNAME}-gitops-argocd
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: RoleBinding
+    metadata:
+      name: argocd-server
+      namespace: ${USERNAME}-jump-app-pro
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: admin
+    subjects:
+    - kind: ServiceAccount
+      name: argocd-argocd-server
+      namespace: ${USERNAME}-gitops-argocd
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: RoleBinding
+    metadata:
+      name: argocd-application-controller
+      namespace: ${USERNAME}-jump-app-cicd
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: admin
+    subjects:
+    - kind: ServiceAccount
+      name: argocd-argocd-application-controller
+      namespace: ${USERNAME}-gitops-argocd
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: RoleBinding
+    metadata:
+      name: argocd-server
+      namespace: ${USERNAME}-jump-app-cicd
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: admin
+    subjects:
+    - kind: ServiceAccount
+      name: argocd-argocd-server
+      namespace: ${USERNAME}-gitops-argocd
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: RoleBinding
+    metadata:
+      name: argocd-application-controller
+      namespace: ${USERNAME}-istio-system
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: admin
+    subjects:
+    - kind: ServiceAccount
+      name: argocd-argocd-application-controller
+      namespace: ${USERNAME}-gitops-argocd
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: RoleBinding
+    metadata:
+      name: argocd-server
+      namespace: ${USERNAME}-istio-system
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: admin
+    subjects:
+    - kind: ServiceAccount
+      name: argocd-argocd-server
+      namespace: ${USERNAME}-gitops-argocd
+  - apiVersion: argoproj.io/v1alpha1
+    kind: AppProject
+    metadata:
+      name: jump-app
+      namespace: ${USERNAME}-gitops-argocd
+    spec:
+      description: Jump App CI/CD, GitOps, ServiceMesh and so on
+      sourceRepos:
+        - '*'
+      destinations:
+        - namespace: ${USERNAME}-jump-app-dev-k8s
+          server: https://kubernetes.default.svc
+        - namespace: ${USERNAME}-jump-app-dev-helm
+          server: https://kubernetes.default.svc
+        - namespace: ${USERNAME}-jump-app-dev
+          server: https://kubernetes.default.svc
+        - namespace: ${USERNAME}-jump-app-pre
+          server: https://kubernetes.default.svc
+        - namespace: ${USERNAME}-jump-app-pro
+          server: https://kubernetes.default.svc
+        - namespace: ${USERNAME}-jump-app-cicd
+          server: https://kubernetes.default.svc
+        - namespace: ${USERNAME}-istio-system
+          server: https://kubernetes.default.svc  
+      clusterResourceWhitelist:
+        - group: '*'
+          kind: '*'
+  - apiVersion: argoproj.io/v1alpha1
+    kind: ArgoCD
+    metadata:
+      name: argocd
+      namespace: ${USERNAME}-gitops-argocd
+    spec: 
+      server:
+        route:
+          enabled: true
+parameters:
+  - description: Username
+    displayName: Username
+    name: USERNAME
+    required: true

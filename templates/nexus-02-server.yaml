@@ -1,0 +1,110 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: nexus-operator
+  annotations:
+    description: Template to deploy a Sonatype Nexus Repository Manager 3 server on OCP.
+    tags: nexus,sonatype,operator
+    iconClass: icon-git
+    openshift.io/provider-display-name: Red Hat, Inc.
+    openshift.io/support-url: https://access.redhat.com
+objects:
+- apiVersion: sonatype.com/v1alpha1
+  kind: NexusRepo
+  metadata:
+    name: ${SERVER_NAME}
+    namespace: ${OPERATOR_NAMESPACE}
+  spec:
+    config:
+      data: null
+      enabled: false
+      mountPath: /sonatype-nexus-conf
+    deployment:
+      additionalContainers: null
+      additionalVolumeMounts: null
+      additionalVolumes: null
+      annotations: {}
+      initContainers: null
+      postStart:
+        command: null
+      preStart:
+        command: null
+      terminationGracePeriodSeconds: 120
+    route:
+      annotations: null
+      enabled: false
+      labels: null
+      name: docker
+      portName: docker
+    secret:
+      data: null
+      enabled: false
+      mountPath: /etc/secret-volume
+      readOnly: true
+    ingress:
+      annotations: {}
+      enabled: false
+      path: /
+      rules: null
+      tls:
+        enabled: true
+        secretName: nexus-tls
+    service:
+      annotations: {}
+      enabled: false
+      labels: {}
+      ports:
+        - name: nexus-service
+          port: 80
+          targetPort: 80
+    statefulset:
+      enabled: false
+    replicaCount: 1
+    deploymentStrategy: {}
+    nexusProxyRoute:
+      annotations: null
+      enabled: false
+      labels: null
+    tolerations: []
+    persistence:
+      accessMode: ReadWriteOnce
+      enabled: true
+      storageSize: 8Gi
+    nexus:
+      nexusPort: 8081
+      dockerPort: 5003
+      resources: {}
+      readinessProbe:
+        failureThreshold: 6
+        initialDelaySeconds: 30
+        path: /
+        periodSeconds: 30
+      livenessProbe:
+        failureThreshold: 6
+        initialDelaySeconds: 30
+        path: /
+        periodSeconds: 30
+      env:
+        - name: install4jAddVmParams
+          value: >-
+            -Xms1200M -Xmx1200M -XX:MaxDirectMemorySize=2G
+            -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap
+        - name: NEXUS_SECURITY_RANDOMPASSWORD
+          value: 'false'
+      securityContext:
+        fsGroup: 2000
+      imagePullSecret: ''
+      imagePullPolicy: IfNotPresent
+      service:
+        type: NodePort
+      hostAliases: []
+      podAnnotations: {}
+parameters:
+- name: OPERATOR_NAMESPACE
+  description: "The project where the operator will be installed."
+  required: false
+  value: "nexus"
+- name: SERVER_NAME
+  description: "The name of the nexus instance."
+  required: false
+  value: "nexus-server"
