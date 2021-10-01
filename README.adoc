@@ -1,4 +1,4 @@
-= Red Hat GitOps Environment Setup
+= Red Hat GitOps Demo
 Álvaro López Medina <alopezme@redhat.com>
 v1.0, 2021-06
 // Create TOC wherever needed
@@ -28,26 +28,58 @@ toc::[]
 
 == Introduction
 
-This repository showcases how to deploy a basic Red Hat Git Ops environment. With this repository, you can deploy many different operator and applications: ArgoCD, GitOps, Tekton, Nexus, etc.
+GitOps is an increasingly popular set of practices for managing the complexities of running hybrid multicluster Kubernetes infrastructure. GitOps centers on treating Git repositories as the single source of truth and applying Git workflows that have been consistently used for application development to infrastructure and application operators. 
 
+This repository provides a starting point to deploy many different operator and applications, such as GitOps, ArgoCD, Nexus, as well as your first application.
 
+== Installing ArgoCD and GitOps
 
-== ArgoCD
+https://docs.openshift.com/container-platform/4.8/cicd/gitops/gitops-release-notes.html[Red Hat OpenShift GitOps] Red Hat OpenShift GitOps uses https://argoproj.github.io/argo-cd/[Argo CD] to manage specific cluster-scoped resources, including platform operators, optional Operator Lifecycle Manager (OLM) operators, and user management. Argo CD is a popular Cloud Native Computing Foundation (CNCF) open source GitOps Kubernetes Operator for declarative configuration on Kubernetes clusters. 
 
-
-
-== GitOps
-
-
-
-== Tekton
+Now, we are going to install the Red Hat OpenShift GitOps Operator to an OpenShift Container Platform cluster and logging in to the Argo CD instance.
 
 [source, bash]
 ----
-oc process -f templates/tekton-01-operator.yaml | oc apply -f -
+oc process -f templates/gitops-01-operator.yaml | oc apply -f -
 ----
 
-== Nexus
+
+After the installation is completed, the operator will be running in `openshift-operators` while an ArgoCD instance will be created in `openshift-gitops`. Access the installed ArgoCD cluster using the following route:
+
+[source, bash]
+----
+oc get routes argocd-cluster-server -n openshift-gitops --template="https://{{.spec.host}}"
+----
+
+
+[TIP]
+====
+The ArgoCD cluster requires a user password. Use the user `admin` and obtain the password with the following command:
+[source, bash]
+----
+oc extract secret/argocd-cluster-cluster -n openshift-gitops --to=-
+----
+====
+
+
+
+
+
+
+
+
+
+
+
+
+== Annex: Installing Nexus
+
+TL;DR:
+    Execute the following script to auto-install a Nexus instance in your cluster: `./auto-install.nexus.sh`
+
+Nexus Repository OSS is an open source repository that supports many artifact formats, including Docker, Java™, and npm. With the Nexus tool integration, pipelines in your toolchain can publish and retrieve versioned apps and their dependencies by using central repositories that are accessible from other environments.
+
+If you are planning to deploy your applications using Helm charts, most of the architectures you will need a Helm repository to host to packaged Helm charts. Install a Nexus repository manager using the following commands:
 
 
 [source, bash]
@@ -63,7 +95,6 @@ oc adm policy add-scc-to-user privileged -z default -n $OPERATOR_NAMESPACE
 
 # Deploy application instance
 oc process -f templates/nexus-02-server.yaml -p OPERATOR_NAMESPACE=$OPERATOR_NAMESPACE -p SERVER_NAME="nexus-server" | oc apply -f -
-
 ----
 
 === Helm repository
@@ -73,27 +104,8 @@ Create a Helm repository with the following steps:
 * Access the Nexus route: `oc get routes nexus-server --template="https://{{.spec.host}}"`.
 * Log in using the admin credentials: `admin` / `admin123`.
 * Server Administration > Repositories > Create Repositories > "Helm(hosted)"
-** name: `helm-repository`.
+** name: `helm-charts`.
 ** DeploymentPolicy: `Allow redeploy`.
 * Click on `Create repository`.
 
-
-== Prepare environment for workshop
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque nulla felis, tincidunt ut blandit eget, luctus eu lorem. Nulla ultrices.
-
-
-[source, bash]
-----
-oc process -f templates/argocd-01-operator.yaml | oc apply -f -
-----
-
-[source, bash]
-----
-oc process -f templates/tekton-01-operator.yaml | oc apply -f -
-----
-
-
-
-
-
+If you don't want to use the console, you can use CURL command to create this repository on the `auto-install-nexus` script.
