@@ -74,8 +74,10 @@ oc extract secret/argocd-cluster-cluster -n openshift-gitops --to=-
 
 == Annex: Installing Nexus
 
-TL;DR:
-    Execute the following script to auto-install a Nexus instance in your cluster: `./auto-install.nexus.sh`
+[IMPORTANT]
+====
+TL;DR: Execute the following script to auto-install a Nexus instance in your cluster: `./auto-install.nexus.sh`
+====
 
 Nexus Repository OSS is an open source repository that supports many artifact formats, including Docker, Java™, and npm. With the Nexus tool integration, pipelines in your toolchain can publish and retrieve versioned apps and their dependencies by using central repositories that are accessible from other environments.
 
