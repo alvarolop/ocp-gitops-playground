@@ -1,8 +1,8 @@
-= Red Hat GitOps Demo
+= Red Hat Openshift GitOps Demo
 Álvaro López Medina <alopezme@redhat.com>
-v1.0, 2021-06
+v1.0, 2021-10
 // Create TOC wherever needed
-:toc: macro
+:toc: 
 :sectanchors:
 :sectnumlevels: 2
 :sectnums: 
@@ -21,10 +21,6 @@ ifndef::env-github[]
 endif::[]
 // End: Enable admonition icons
 
-This repository showcases how to deploy a basic Red Hat Git Ops environment.
-
-// Create the Table of contents here
-toc::[]
 
 == Introduction
 
@@ -32,7 +28,7 @@ GitOps is an increasingly popular set of practices for managing the complexities
 
 This repository provides a starting point to deploy many different operator and applications, such as GitOps, ArgoCD, Nexus, as well as your first application.
 
-== Installing ArgoCD and GitOps
+== Installing ArgoCD and Openshift GitOps
 
 https://docs.openshift.com/container-platform/4.8/cicd/gitops/gitops-release-notes.html[Red Hat OpenShift GitOps] Red Hat OpenShift GitOps uses https://argoproj.github.io/argo-cd/[Argo CD] to manage specific cluster-scoped resources, including platform operators, optional Operator Lifecycle Manager (OLM) operators, and user management. Argo CD is a popular Cloud Native Computing Foundation (CNCF) open source GitOps Kubernetes Operator for declarative configuration on Kubernetes clusters. 
 
@@ -42,6 +38,16 @@ Now, we are going to install the Red Hat OpenShift GitOps Operator to an OpenShi
 ----
 oc process -f templates/gitops-01-operator.yaml | oc apply -f -
 ----
+
+By default, after the installation, the GitOps operator deploys an ArgoCD instance. To avoid that and have full control of the installation location, the https://access.redhat.com/solutions/6097231[following configuration] has been set.
+
+
+
+
+
+
+
+
 
 
 After the installation is completed, the operator will be running in `openshift-operators` while an ArgoCD instance will be created in `openshift-gitops`. Access the installed ArgoCD cluster using the following route:
@@ -60,6 +66,10 @@ The ArgoCD cluster requires a user password. Use the user `admin` and obtain the
 oc extract secret/argocd-cluster-cluster -n openshift-gitops --to=-
 ----
 ====
+
+
+
+
 
 
 
@@ -99,7 +109,7 @@ oc adm policy add-scc-to-user privileged -z default -n $OPERATOR_NAMESPACE
 oc process -f templates/nexus-02-server.yaml -p OPERATOR_NAMESPACE=$OPERATOR_NAMESPACE -p SERVER_NAME="nexus-server" | oc apply -f -
 ----
 
-=== Helm repository
+=== Creating  a Helm repository
 
 Create a Helm repository with the following steps:
 
@@ -111,3 +121,41 @@ Create a Helm repository with the following steps:
 * Click on `Create repository`.
 
 If you don't want to use the console, you can use CURL command to create this repository on the `auto-install-nexus` script.
+
+
+
+
+
+
+
+== Openshift GitOps support and deployed versions
+
+OpenShift GitOps is shipped inclusive as part of the OpenShift Container Platform subscription and supported per the Red Hat production terms of support.
+
+Check the following table with GitOps versions and its equivalent to ArgoCD:
+
+[%header,format=csv]
+|===
+GitOps version,OCP version,ArgoCD version, Release date
+1.0 (TP), 4.6, 1.8, "Feb 12, 2021"
+1.1, 4.7, X, "April 15, 2021"
+1.2, 4.8, 2.0, "July 29, 2021"
+1.3 (Not GA yet), 4.9, 2.1, "October, 2021?"
+|===
+
+
+For more information, check the https://access.redhat.com/support/policy/updates/openshift#gitops[Red Hat OpenShift Container Platform Life Cycle Policy].
+
+
+Note that only the ArgoCD CRD is supported, the rest are Tech Preview in the latest version of Openshift GitOps:
+
+[%header,format=csv]
+|===
+Feature, Support in GitOps 1.2
+Argo CD, GA
+Argo CD ApplicationSet, TP
+Red Hat OpenShift GitOps Application Manager (kam), TP
+Red Hat OpenShift GitOps Service, TP
+|===
+
+For more information check the Openshift GitOps https://docs.openshift.com/container-platform/4.8/cicd/gitops/gitops-release-notes.html#support-matrix-1-2_gitops-release-notes[release notes].
