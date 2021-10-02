@@ -20,7 +20,11 @@ objects:
       name: openshift-gitops-operator
       source: redhat-operators
       sourceNamespace: openshift-marketplace
-      # startingCSV: openshift-gitops-operator.v1.1.2
+      startingCSV: openshift-gitops-operator.v1.2.1
+      config:
+        env:
+          - name: DISABLE_DEFAULT_ARGOCD_INSTANCE
+            value: "true"
 parameters:
 - name: OPERATOR_NAMESPACE
   description: "The project where the operator will be installed."
