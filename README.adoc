@@ -76,10 +76,10 @@ oc get routes argocd-cluster-server -n {ocp-cluster-project} --template="https:/
 
 
 
+=== Configuring Authentication
 
 
-
-=== Enabling the OpenShift integrated login
+==== #1: Enabling the OpenShift integrated login
 
 Enabling OpenShift integrated login is quite simple, but might not be perfectly documented as of today. It is already configured in the templates deployed in the section above. This is just for documentation purposes. 
 
@@ -119,32 +119,58 @@ This feature implies changes at several levels:
 
 
 
+==== #2: Using default admin user
 
 
-[TIP]
-====
-After configuring Openshift login, you can still log in using a user / password. Use the user `admin` and obtain the password with the following command:
+Apart from using the Openshift integrated login, it is possible to use the built-in `admin` user. This user has been disabled in the ArgoCD template `template/gitops-02-argocd.yaml` configuring `.spec.disableAdmin` to `true`. Set it to `false` if you want to use it.
+
+Then, you will be able to login using ArgoCD user / password. Use user `admin` and obtain the password with the following command:
 [source, bash, subs="attributes"]
 ----
 oc extract secret/argocd-cluster-cluster -n {ocp-cluster-project}  --to=-
 ----
-====
 
 
-=== Improving RBAC configuration
+
+=== Configuring authorization 
+
+
+==== #1: Using namespace Isolation at cluster level (Service Account)
+
+/ / TO DO
+
+https://blog.andyserver.com/2020/12/argocd-namespace-isolation/
+https://access.redhat.com/solutions/5875661
+https://github.com/redhat-developer/gitops-operator/issues/116
+
+
+
+
+==== #2: Using advanced RBAC configuration (SSO users)
+
+
+The RBAC feature enables restriction of access to Argo CD resources. Argo CD does not have its own user management system and has only one built-in user admin. 
+
+
+The RBAC configuration can be customized using the `ArgoCD.spec.rbac.policy `
+
+
 
 / / TO DO
 
 https://argo-cd.readthedocs.io/en/stable/operator-manual/rbac/
 https://rtfm.co.ua/en/argocd-users-access-and-rbac/
 
-=== Limiting the permissions of the Service Account
 
 
-/ / TO DO
 
-https://access.redhat.com/solutions/5875661
-https://github.com/redhat-developer/gitops-operator/issues/116
+
+
+
+
+
+
+
 
 
 
@@ -152,6 +178,56 @@ https://github.com/redhat-developer/gitops-operator/issues/116
 == Creating your first application
 
 
+[WARNING]
+====
+
+This section expects you to create manually the namespace for the demo application. In the following section you will see how to automate it with GitOps, too.
+
+Execute the following command:
+
+[source, bash, subs="attributes"]
+----
+oc new-project spring-petclinic --display-name="Pet Clinic app" --description="This project holds all the resources of the Pet Clinic application"
+# Add a label to the namespace your application is deployed in so that the Argo CD instance in the openshift-gitops namespace can manage it
+oc label namespace spring-petclinic argocd.argoproj.io/managed-by=gitops
+----
+
+====
+
+
+Create an Application resource using the following template:
+
+[source, bash]
+----
+oc process -f templates/gitops-03-application-app.yaml | oc apply -f -
+----
+
+
+
+
+
+
+
+
+
+
+
+== Managing your infra with Openshift GitOps
+
+
+[WARNING]
+====
+
+This section explains how to automate the management of Openshift infra resources like projects. Please, delete the project created manually in the previous section.
+
+Execute the following command:
+
+[source, bash, subs="attributes"]
+----
+oc delete project spring-petclinic
+----
+
+====
 
 
 
