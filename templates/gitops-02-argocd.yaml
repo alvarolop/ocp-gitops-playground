@@ -85,8 +85,8 @@ objects:
             memory: 512Mi
       rbac:
         defaultPolicy: 'role:readonly'
-        policy: |
-          g, system:cluster-admins, role:admin
+        # policy: |
+        #   g, system:cluster-admins, role:admin
         scopes: '[groups]'
       disableAdmin: true
       # usersAnonymousEnabled: true
