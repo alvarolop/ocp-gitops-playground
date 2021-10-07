@@ -88,6 +88,8 @@ objects:
         policy: |
           g, system:cluster-admins, role:admin
         scopes: '[groups]'
+      disableAdmin: true
+      # usersAnonymousEnabled: true
       repo:
         resources:
           limits:
