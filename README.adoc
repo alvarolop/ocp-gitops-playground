@@ -131,6 +131,22 @@ oc extract secret/argocd-cluster-cluster -n {ocp-cluster-project}  --to=-
 ====
 
 
+=== Improving RBAC configuration
+
+/ / TO DO
+
+https://argo-cd.readthedocs.io/en/stable/operator-manual/rbac/
+https://rtfm.co.ua/en/argocd-users-access-and-rbac/
+
+=== Limiting the permissions of the Service Account
+
+
+/ / TO DO
+
+https://access.redhat.com/solutions/5875661
+https://github.com/redhat-developer/gitops-operator/issues/116
+
+
 
 
 == Creating your first application
@@ -139,15 +155,18 @@ oc extract secret/argocd-cluster-cluster -n {ocp-cluster-project}  --to=-
 
 
 
-== Improving RBAC configuration
 
 
 
 
 
-== Limiting the permissions of the Service Account
 
 
+== Storing secrets content outside of git
+
+https://cloud.redhat.com/blog/how-to-use-hashicorp-vault-and-argo-cd-for-gitops-on-openshift
+
+https://blog.ramon-gordillo.dev/2021/03/gitops-with-argocd-and-hashicorp-vault-on-kubernetes/
 
 
 
@@ -241,3 +260,4 @@ For more information check the Openshift GitOps https://docs.openshift.com/conta
 
 == Documentation and useful links
 
+https://github.com/argoproj/argo-cd
