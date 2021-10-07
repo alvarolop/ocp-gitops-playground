@@ -1,7 +1,11 @@
 = Red Hat Openshift GitOps Demo
 Álvaro López Medina <alopezme@redhat.com>
 v1.0, 2021-10
-// Create TOC wherever needed
+// Metadata
+:description: This document shows how to do a basic installation of ArgoCD customizing basic configuration of login.
+:keywords: argocd, gitops, openshift, red hat
+
+// Settings
 :toc: 
 :sectanchors:
 :sectnumlevels: 2
@@ -21,6 +25,10 @@ ifndef::env-github[]
 endif::[]
 // End: Enable admonition icons
 
+// Refs
+:ocp-cluster-project: gitops
+
+
 
 == Introduction
 
@@ -39,36 +47,107 @@ Now, we are going to install the Red Hat OpenShift GitOps Operator to an OpenShi
 oc process -f templates/gitops-01-operator.yaml | oc apply -f -
 ----
 
-By default, after the installation, the GitOps operator deploys an ArgoCD instance. To avoid that and have full control of the installation location, the https://access.redhat.com/solutions/6097231[following configuration] has been set.
+After the installation is completed, the operator pods will be running in the `openshift-operators` project.
 
+By default, the GitOps operator deploys an ArgoCD instance in the `openshift-gitops` project. To avoid that and have full control of the installation location, the https://access.redhat.com/solutions/6097231[following configuration] has been set in the previous OCP template.
 
+[source, yaml]
+----
+    spec:
+      config:
+        env:
+          - name: DISABLE_DEFAULT_ARGOCD_INSTANCE
+            value: "true"
+----
 
-
-
-
-
-
-
-
-After the installation is completed, the operator will be running in `openshift-operators` while an ArgoCD instance will be created in `openshift-gitops`. Access the installed ArgoCD cluster using the following route:
+Now, we are going to deploy our ArgoCD instance manually using the following template:
 
 [source, bash]
 ----
-oc get routes argocd-cluster-server -n openshift-gitops --template="https://{{.spec.host}}"
+oc process -f templates/gitops-02-argocd.yaml | oc apply -f -
 ----
+
+This command will create a namespace `{ocp-cluster-project}`, a default Application Project and an ArgoCD cluster. The configuration used is the default Operator configuration with some small improvements: Delegating authentication on the OpenShift integrated login, or implementing basic RBAC policies.
+
+Access the installed ArgoCD cluster using the following route:
+
+[source, bash, subs="attributes"]
+----
+oc get routes argocd-cluster-server -n {ocp-cluster-project} --template="https://{{.spec.host}}"
+----
+
+
+
+
+
+
+=== Enabling the OpenShift integrated login
+
+Enabling OpenShift integrated login is quite simple, but might not be perfectly documented as of today. It is already configured in the templates deployed in the section above. This is just for documentation purposes. 
+
+This feature implies changes at several levels:
+
+1. Set an environment variable at the operator level. This will tell the operator to enable Dex server for external authentication. https://github.com/redhat-developer/gitops-operator/issues/91#issuecomment-806660510[GH Issue], https://dev.to/camptocamp-ops/enable-openshift-login-on-argocd-from-gitops-2h9a[Blog post].
++
+[source, yaml]
+----
+    spec:
+      config:
+        env:
+          - name: DISABLE_DEX
+            value: "false"
+----
+
+2. Configure the ArgoCD object to use the DEX Openshift login integration.
++
+[source, yaml]
+----
+    spec:
+      dex:
+        openShiftOAuth: true
+----
+
+3. Configure the ArgoCD object with the desired RBAC policies. For example, the simples option:
++
+[source, yaml]
+----
+    spec:
+      rbac:
+        defaultPolicy: 'role:readonly'
+        policy: |
+          g, system:cluster-admins, role:admin
+        scopes: '[groups]'
+----
+
+
+
 
 
 [TIP]
 ====
-The ArgoCD cluster requires a user password. Use the user `admin` and obtain the password with the following command:
-[source, bash]
+After configuring Openshift login, you can still log in using a user / password. Use the user `admin` and obtain the password with the following command:
+[source, bash, subs="attributes"]
 ----
-oc extract secret/argocd-cluster-cluster -n openshift-gitops --to=-
+oc extract secret/argocd-cluster-cluster -n {ocp-cluster-project}  --to=-
 ----
 ====
 
 
 
+
+== Creating your first application
+
+
+
+
+
+== Improving RBAC configuration
+
+
+
+
+
+== Limiting the permissions of the Service Account
 
 
 
