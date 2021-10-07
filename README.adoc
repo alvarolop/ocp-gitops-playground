@@ -4,7 +4,6 @@ v1.0, 2021-10
 // Metadata
 :description: This document shows how to do a basic installation of ArgoCD customizing basic configuration of login.
 :keywords: argocd, gitops, openshift, red hat
-
 // Settings
 :toc: 
 :sectanchors:
@@ -24,7 +23,6 @@ ifndef::env-github[]
 :icons: font
 endif::[]
 // End: Enable admonition icons
-
 // Refs
 :ocp-cluster-project: gitops
 
@@ -238,3 +236,8 @@ Red Hat OpenShift GitOps Service, TP
 |===
 
 For more information check the Openshift GitOps https://docs.openshift.com/container-platform/4.8/cicd/gitops/gitops-release-notes.html#support-matrix-1-2_gitops-release-notes[release notes].
+
+
+
+== Documentation and useful links
+
