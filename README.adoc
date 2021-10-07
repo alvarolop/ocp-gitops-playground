@@ -26,6 +26,8 @@ endif::[]
 // End: Enable admonition icons
 // Refs
 :ocp-cluster-project: gitops
+:ocp-cluster-name: argocd-cluster
+:ocp-app-project: spring-petclinic
 
 
 
@@ -72,13 +74,14 @@ Access the installed ArgoCD cluster using the following route:
 
 [source, bash, subs="attributes"]
 ----
-oc get routes argocd-cluster-server -n {ocp-cluster-project} --template="https://{{.spec.host}}"
+oc get routes {ocp-cluster-name}-server -n {ocp-cluster-project} --template="https://{{.spec.host}}"
 ----
 
 
 
 === Configuring Authentication
 
+ArgoCD provides several ways of authenticating users. Here we will talk about the two easier to configure: The default admin user and the integration with Openshift login.
 
 ==== Using the OpenShift integrated login
 
@@ -128,21 +131,67 @@ Apart from using the Openshift integrated login, it is possible to use the built
 Then, you will be able to login using ArgoCD user / password. Use user `admin` and obtain the password with the following command:
 [source, bash, subs="attributes"]
 ----
-oc extract secret/argocd-cluster-cluster -n {ocp-cluster-project}  --to=-
+oc extract secret/{ocp-cluster-name}-cluster -n {ocp-cluster-project}  --to=-
 ----
 
 
 
-=== Configuring authorization 
+=== Configuring authorization
+
+CAUTION: Authorization in ArgoCD is a combination of configuring permissions at different levels. Here we present all three levels that you have to take care of in order to set proper authorization configuration. Please, read the three following sections carefully. 
+
+
+==== Using ArgoCD managed namespaces
+
+The current version of Openshift GitOps supports deploying several clusters of ArgoCD in the same Openshift cluster. This feature is essential for organizations that want to implement multi-tenancy at the OCP level. With this feature available, now we have to distribute each namespace among the ArgoCD clusters. This is done using the `managed-by` label.
+
+Add a label to the namespace where your application is deployed in so that the Argo CD instance in the `{ocp-cluster-project}` namespace can manage it:
+
+[source, bash, subs="attributes"]
+----
+oc label namespace {ocp-app-project} argocd.argoproj.io/managed-by={ocp-cluster-project}
+----
+
+If you don't do so, the error message that you will see in the web console when you try to synchronize an application is:
+
+[source, bash]
+----
+Namespace "<namespace>" for <resource> "<resource-name>" is not managed.
+----
+
+Link to the https://docs.openshift.com/container-platform/4.8/cicd/gitops/configuring_argo_cd_to_recursively_sync_a_git_repository_with_your_application/configuring-an-openshift-cluster-by-deploying-an-application-with-cluster-configurations.html#creating-an-application-by-using-the-oc-tool_configuring-an-openshift-cluster-by-deploying-an-application-with-cluster-configurations[documentation]. 
 
 
 ==== Using namespace Isolation at cluster level (Service Account)
 
-/ / TO DO
+The ArgoCD instance have only privileges in its namespace which is `{ocp-cluster-project}`. For creating/updating/listing resources in other namespaces, it's mandatory to update the RBAC for its Service Account.
 
-https://blog.andyserver.com/2020/12/argocd-namespace-isolation/
-https://access.redhat.com/solutions/5875661
-https://github.com/redhat-developer/gitops-operator/issues/116
+This section can be as complex as the security requirements that your organization demands for the ArgoCD deployment. The easiest solution for non-productive environments would be to grant cluster-admin rights to the service account that interacts with the k8s API.
+
+[source, bash, subs="attributes"]
+----
+oc adm policy add-cluster-role-to-user admin system:serviceaccount:{ocp-cluster-project}:{ocp-cluster-name}-argocd-application-controller
+----
+
+
+If you prefer to have a per-project tunning, you can use the configuration set in the template `template/gitops-03-application-app.yaml`, where we provide project admin rights to the same service account. This is also oriented to get a proper multi-tenancy configuration, like in the previous section. Check the template mentioned or use the following command:
+
+[source, bash, subs="attributes"]
+----
+oc adm policy add-role-to-user admin system:serviceaccount:{ocp-cluster-project}:{ocp-cluster-name}-argocd-application-controller -n {ocp-app-project}
+----
+
+
+Obviously, you can even set a finer tunning by creating a custom `Role` and `RoleBinding` to specify the resources that each ArgoCD will be allowed to manage per namespace. This https://access.redhat.com/solutions/5875661[KCS] gives you an example of how to configure one of these RoleBindings.
+
+
+
+Extra documentation:
+* https://blog.andyserver.com/2020/12/argocd-namespace-isolation[Deep-dive blog post] about namespace isolation using the SA RoleBindings.
+* https://github.com/redhat-developer/gitops-operator/issues/116[Upstream issue] regarding permissions for the ArgoCD instance.
+
+
+
 
 
 
@@ -162,10 +211,17 @@ The RBAC configuration can be customized using the `ArgoCD.spec.rbac.policy `
 https://argo-cd.readthedocs.io/en/stable/operator-manual/rbac/
 https://rtfm.co.ua/en/argocd-users-access-and-rbac/
 
+https://argo-cd.readthedocs.io/en/stable/user-guide/projects/#configuring-rbac-with-projects
+
+
+https://docs.openshift.com/container-platform/4.8/authentication/understanding-authentication.html
 
 
 
 
+oc adm groups new {ocp-app-project}-developer
+oc adm groups new {ocp-app-project}-admin
+oc adm groups add-users {ocp-app-project}-admin alopezme
 
 
 
@@ -182,15 +238,13 @@ https://rtfm.co.ua/en/argocd-users-access-and-rbac/
 [WARNING]
 ====
 
-This section expects you to create manually the namespace for the demo application. In the following section you will see how to automate it with GitOps, too.
+This section expects you to create the namespace for the demo application manually. In the following section you will see how to automate it with GitOps, too.
 
 Execute the following command:
 
 [source, bash, subs="attributes"]
 ----
-oc new-project spring-petclinic --display-name="Pet Clinic app" --description="This project holds all the resources of the Pet Clinic application"
-# Add a label to the namespace your application is deployed in so that the Argo CD instance in the openshift-gitops namespace can manage it
-oc label namespace spring-petclinic argocd.argoproj.io/managed-by=gitops
+oc new-project {ocp-app-project} --display-name="Pet Clinic app" --description="This project holds all the resources of the Pet Clinic application"
 ----
 
 ====
@@ -225,7 +279,7 @@ Execute the following command:
 
 [source, bash, subs="attributes"]
 ----
-oc delete project spring-petclinic
+oc delete project {ocp-app-project}
 ----
 
 ====
@@ -244,6 +298,17 @@ oc delete project spring-petclinic
 https://cloud.redhat.com/blog/how-to-use-hashicorp-vault-and-argo-cd-for-gitops-on-openshift
 
 https://blog.ramon-gordillo.dev/2021/03/gitops-with-argocd-and-hashicorp-vault-on-kubernetes/
+
+
+
+
+
+
+
+
+
+
+
 
 
 
