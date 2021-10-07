@@ -5,9 +5,10 @@ v1.0, 2021-10
 :description: This document shows how to do a basic installation of ArgoCD customizing basic configuration of login.
 :keywords: argocd, gitops, openshift, red hat
 // Settings
-:toc: 
+:toc:
+:toclevels: 3
 :sectanchors:
-:sectnumlevels: 2
+:sectnumlevels: 3
 :sectnums: 
 :source-highlighter: pygments
 :imagesdir: images
@@ -79,7 +80,7 @@ oc get routes argocd-cluster-server -n {ocp-cluster-project} --template="https:/
 === Configuring Authentication
 
 
-==== #1: Enabling the OpenShift integrated login
+==== Using the OpenShift integrated login
 
 Enabling OpenShift integrated login is quite simple, but might not be perfectly documented as of today. It is already configured in the templates deployed in the section above. This is just for documentation purposes. 
 
@@ -119,7 +120,7 @@ This feature implies changes at several levels:
 
 
 
-==== #2: Using default admin user
+==== Using the default admin user
 
 
 Apart from using the Openshift integrated login, it is possible to use the built-in `admin` user. This user has been disabled in the ArgoCD template `template/gitops-02-argocd.yaml` configuring `.spec.disableAdmin` to `true`. Set it to `false` if you want to use it.
@@ -135,7 +136,7 @@ oc extract secret/argocd-cluster-cluster -n {ocp-cluster-project}  --to=-
 === Configuring authorization 
 
 
-==== #1: Using namespace Isolation at cluster level (Service Account)
+==== Using namespace Isolation at cluster level (Service Account)
 
 / / TO DO
 
@@ -146,7 +147,7 @@ https://github.com/redhat-developer/gitops-operator/issues/116
 
 
 
-==== #2: Using advanced RBAC configuration (SSO users)
+==== Using advanced RBAC configuration (SSO users)
 
 
 The RBAC feature enables restriction of access to Argo CD resources. Argo CD does not have its own user management system and has only one built-in user admin. 
