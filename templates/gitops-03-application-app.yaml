@@ -1,0 +1,89 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: gitops-application
+  annotations:
+    description: Template to create an application in Openshift GitOps to deploy an application from a git repository.
+    tags: argocd,gitops,operator
+    iconClass: icon-git
+    openshift.io/provider-display-name: Red Hat, Inc.
+    openshift.io/support-url: https://access.redhat.com
+objects:
+
+  - apiVersion: argoproj.io/v1alpha1
+    kind: AppProject
+    metadata:
+      name: ${APP_NAME}
+      namespace: ${ARGOCD_NAMESPACE}
+    spec:
+      clusterResourceWhitelist:
+        - group: '*'
+          kind: '*'
+      description: "${APP_NAME} - ArgoCD Project"
+      destinations:
+        - namespace: '*'
+          server: '*'
+      roles:
+        - name: read-only
+          description: Read-only privileges to ${APP_NAME} project
+          policies:
+            - p, proj:${APP_NAME}:read-only, applications, get, ${APP_NAME}/*, allow
+          groups:
+            - "${APP_NAME}-developer"
+        - name: admin
+          description: Admin privileges to ${APP_NAME} project
+          policies:
+            - p, proj:${APP_NAME}:admin, applications, *, ${APP_NAME}/*, allow
+          groups:
+            - "${APP_NAME}-admin"
+      sourceRepos:
+        - '*'
+
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: RoleBinding
+    metadata:
+      name: "${APP_NAME}-role-binding"
+      namespace: ${APP_NAME}
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: admin
+    subjects:
+      - kind: ServiceAccount
+        name: "${ARGOCD_CLUSTER_NAME}-argocd-application-controller"
+        namespace: ${ARGOCD_NAMESPACE}
+
+  - apiVersion: argoproj.io/v1alpha1
+    kind: Application
+    metadata:
+      name: ${APP_NAME}
+      namespace: ${ARGOCD_NAMESPACE}
+    spec:
+      destination:
+        namespace: ${APP_NAME}
+        server: https://kubernetes.default.svc
+      project: ${APP_NAME}
+      source:
+        directory:
+          recurse: true
+        path: app
+        repoURL: https://github.com/alvarolop/openshift-gitops-getting-started.git
+        targetRevision: main
+      # syncPolicy:
+      #   automated:
+      #     prune: true
+      #     selfHeal: true
+
+parameters:
+- name: ARGOCD_NAMESPACE
+  description: "The project where the cluster will be installed."
+  required: false
+  value: "gitops"
+- name: ARGOCD_CLUSTER_NAME
+  description: "The name of the ArgoCD cluster."
+  required: false
+  value: "argocd-cluster"
+- name: APP_NAME
+  description: "The name of the application to deploy."
+  required: false
+  value: "spring-petclinic"
