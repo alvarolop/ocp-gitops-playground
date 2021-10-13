@@ -182,12 +182,13 @@ oc adm policy add-role-to-user admin system:serviceaccount:{ocp-cluster-project}
 ----
 
 
-Obviously, you can even set a finer tunning by creating a custom `Role` and `RoleBinding` to specify the resources that each ArgoCD will be allowed to manage per namespace. This https://access.redhat.com/solutions/5875661[KCS] gives you an example of how to configure one of these RoleBindings.
+Obviously, you can even set a finer tunning by creating a custom `Role` and `RoleBinding` to specify the resources that each ArgoCD will be allowed to manage per namespace. This https://access.redhat.com/solutions/5875661[KCS] gives you an example of how to configure one of these `RoleBindings`.
 
 
 
 Extra documentation:
-* https://blog.andyserver.com/2020/12/argocd-namespace-isolation[Deep-dive blog post] about namespace isolation using the SA RoleBindings.
+
+* https://blog.andyserver.com/2020/12/argocd-namespace-isolation[Deep-dive blog post] about namespace isolation using the SA `RoleBindings`.
 * https://github.com/redhat-developer/gitops-operator/issues/116[Upstream issue] regarding permissions for the ArgoCD instance.
 
 
@@ -209,10 +210,9 @@ The RBAC configuration can be customized using the `ArgoCD.spec.rbac.policy `
 / / TO DO
 
 https://argo-cd.readthedocs.io/en/stable/operator-manual/rbac/
-https://rtfm.co.ua/en/argocd-users-access-and-rbac/
-
+https://rtfm.co.ua/en/argocd-users-access-and-rbac/#Projects_and_roles
 https://argo-cd.readthedocs.io/en/stable/user-guide/projects/#configuring-rbac-with-projects
-
+https://github.com/argoproj/argo-cd/blob/master/assets/builtin-policy.csv
 
 https://docs.openshift.com/container-platform/4.8/authentication/understanding-authentication.html
 
@@ -222,6 +222,7 @@ https://docs.openshift.com/container-platform/4.8/authentication/understanding-a
 oc adm groups new {ocp-app-project}-developer
 oc adm groups new {ocp-app-project}-admin
 oc adm groups add-users {ocp-app-project}-admin alopezme
+oc adm groups add-users {ocp-app-project}-developer svidalur
 
 
 
