@@ -15,12 +15,11 @@ objects:
       name: openshift-gitops-operator
       namespace: ${OPERATOR_NAMESPACE}
     spec:
-      channel: stable
+      channel: latest
       installPlanApproval: Automatic 
       name: openshift-gitops-operator
       source: redhat-operators
       sourceNamespace: openshift-marketplace
-      startingCSV: openshift-gitops-operator.v1.2.1
       config:
         env:
           - name: DISABLE_DEFAULT_ARGOCD_INSTANCE
