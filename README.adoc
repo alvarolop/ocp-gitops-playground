@@ -45,7 +45,7 @@ Now, we are going to install the Red Hat OpenShift GitOps Operator to an OpenShi
 
 [source, bash]
 ----
-oc process -f openshift/gitops-01-operator.yaml | oc apply -f -
+oc process -f openshift/01-operator.yaml | oc apply -f -
 ----
 
 After the installation is completed, the operator pods will be running in the `openshift-operators` project.
@@ -65,7 +65,7 @@ Now, we are going to deploy our ArgoCD instance manually using the following tem
 
 [source, bash]
 ----
-oc process -f openshift/gitops-02-argocd.yaml | oc apply -f -
+oc process -f openshift/02-argocd.yaml | oc apply -f -
 ----
 
 This command will create a namespace `{ocp-cluster-project}`, a default Application Project and an ArgoCD cluster. The configuration used is the default Operator configuration with some small improvements: Delegating authentication on the OpenShift integrated login, or implementing basic RBAC policies.
@@ -255,7 +255,7 @@ Create an Application resource using the following template:
 
 [source, bash]
 ----
-oc process -f openshift/gitops-03-application-app.yaml | oc apply -f -
+oc process -f openshift/11-application-app.yaml | oc apply -f -
 ----
 
 

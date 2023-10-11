@@ -21,12 +21,15 @@ objects:
       source: redhat-operators
       sourceNamespace: openshift-marketplace
       # https://github.com/redhat-developer/gitops-operator/blob/master/docs/OpenShift%20GitOps%20Usage%20Guide.md#setting-environment-variables
+      # https://developers.redhat.com/articles/2023/03/06/5-global-environment-variables-provided-openshift-gitops#5_environment_variables__details
       config:
         env:
           - name: DISABLE_DEFAULT_ARGOCD_INSTANCE
             value: "true"
-          # - name: DISABLE_DEX
-          #   value: "false"
+          - name: DISABLE_DEFAULT_ARGOCD_CONSOLELINK
+            value: "true"
+          - name: ARGOCD_CLUSTER_CONFIG_NAMESPACES
+            value: openshift-gitops, gitops
 parameters:
 - name: OPERATOR_NAMESPACE
   description: "The project where the operator will be installed."
