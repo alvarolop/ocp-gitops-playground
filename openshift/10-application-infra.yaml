@@ -1,0 +1,36 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: gitops-application
+  annotations:
+    description: Template to create an application in Openshift GitOps to deploy an application from a git repository.
+    tags: argocd,gitops,operator
+    iconClass: icon-git
+    openshift.io/provider-display-name: Red Hat, Inc.
+    openshift.io/support-url: https://access.redhat.com
+objects:
+  - apiVersion: argoproj.io/v1alpha1
+    kind: Application
+    metadata:
+      name: cluster-config
+      namespace: ${ARGOCD_NAMESPACE}
+    spec:
+      destination:
+        namespace: default
+        server: https://kubernetes.default.svc
+      project: default
+      source:
+        directory:
+          recurse: true
+        path: cluster
+        repoURL: https://github.com/alvarolop/openshift-gitops-getting-started
+        targetRevision: HEAD
+parameters:
+- name: ARGOCD_NAMESPACE
+  description: "The project where the cluster will be installed."
+  required: false
+  value: "gitops"
+- name: ARGOCD_CLUSTER_NAME
+  description: "The name of the ArgoCD cluster."
+  required: false
+  value: "argocd-cluster"

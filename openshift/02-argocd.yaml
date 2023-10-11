@@ -1,0 +1,171 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: gitops-argocd
+  annotations:
+    description: Template to deploy a Red Hat Openshift GitOps ArgoCd cluster on OCP.
+    tags: argocd,gitops,operator
+    iconClass: icon-git
+    openshift.io/provider-display-name: Red Hat, Inc.
+    openshift.io/support-url: https://access.redhat.com
+objects:
+
+  - apiVersion: project.openshift.io/v1
+    kind: Project
+    metadata:
+      name: ${ARGOCD_NAMESPACE}
+      annotations:
+        openshift.io/description: "This project contains all the resources related to the ArgoCD installation"
+        openshift.io/display-name: "ArgoCD"
+
+  - apiVersion: argoproj.io/v1alpha1
+    kind: AppProject
+    metadata:
+      name: default
+      namespace: ${ARGOCD_NAMESPACE}
+    spec:
+      clusterResourceWhitelist:
+        - group: '*'
+          kind: '*'
+      destinations:
+        - namespace: '*'
+          server: '*'
+      sourceRepos:
+        - '*'
+
+  - apiVersion: argoproj.io/v1alpha1
+    kind: ArgoCD
+    metadata:
+      name: ${ARGOCD_CLUSTER_NAME}
+      namespace: ${ARGOCD_NAMESPACE}
+    spec:
+      server:
+        autoscale:
+          enabled: false
+        grpc:
+          ingress:
+            enabled: false
+        ingress:
+          enabled: false
+        resources:
+          limits:
+            cpu: 500m
+            memory: 256Mi
+          requests:
+            cpu: 125m
+            memory: 128Mi
+        route:
+          enabled: true
+        service:
+          type: ''
+      grafana:
+        enabled: false
+        ingress:
+          enabled: false
+        resources:
+          limits:
+            cpu: 500m
+            memory: 256Mi
+          requests:
+            cpu: 250m
+            memory: 128Mi
+        route:
+          enabled: false
+      monitoring:
+        enabled: false
+      notifications:
+        enabled: false
+      prometheus:
+        enabled: false
+        ingress:
+          enabled: false
+        route:
+          enabled: false
+      initialSSHKnownHosts: {}
+      sso:
+        dex:
+          openShiftOAuth: true
+          resources:
+            limits:
+              cpu: 500m
+              memory: 256Mi
+            requests:
+              cpu: 250m
+              memory: 128Mi
+        provider: dex
+      applicationSet:
+        resources:
+          limits:
+            cpu: '2'
+            memory: 1Gi
+          requests:
+            cpu: 250m
+            memory: 512Mi
+        webhookServer:
+          ingress:
+            enabled: false
+          route:
+            enabled: false
+      rbac:
+        defaultPolicy: 'role:admin'
+        policy: |
+          g, system:cluster-admins, role:admin
+          g, cluster-admins, role:admin
+        scopes: '[groups]'
+      disableAdmin: true
+      # usersAnonymousEnabled: true
+      repo:
+        resources:
+          limits:
+            cpu: '1'
+            memory: 1Gi
+          requests:
+            cpu: 250m
+            memory: 256Mi
+      resourceExclusions: |
+        - apiGroups:
+          - tekton.dev
+          clusters:
+          - '*'
+          kinds:
+          - TaskRun
+          - PipelineRun
+      ha:
+        enabled: false
+        resources:
+          limits:
+            cpu: 500m
+            memory: 256Mi
+          requests:
+            cpu: 250m
+            memory: 128Mi
+      tls:
+        ca: {}
+      redis:
+        resources:
+          limits:
+            cpu: 500m
+            memory: 256Mi
+          requests:
+            cpu: 250m
+            memory: 128Mi
+      controller:
+        processors: {}
+        resources:
+          limits:
+            cpu: '2'
+            memory: 2Gi
+          requests:
+            cpu: 250m
+            memory: 1Gi
+        sharding: {}
+
+parameters:
+- name: ARGOCD_NAMESPACE
+  description: "The project where the cluster will be installed."
+  required: false
+  value: "gitops"
+- name: ARGOCD_CLUSTER_NAME
+  description: "The name of the ArgoCD cluster."
+  required: false
+  value: "argocd-cluster"

@@ -45,7 +45,7 @@ Now, we are going to install the Red Hat OpenShift GitOps Operator to an OpenShi
 
 [source, bash]
 ----
-oc process -f templates/gitops-01-operator.yaml | oc apply -f -
+oc process -f openshift/gitops-01-operator.yaml | oc apply -f -
 ----
 
 After the installation is completed, the operator pods will be running in the `openshift-operators` project.
@@ -65,7 +65,7 @@ Now, we are going to deploy our ArgoCD instance manually using the following tem
 
 [source, bash]
 ----
-oc process -f templates/gitops-02-argocd.yaml | oc apply -f -
+oc process -f openshift/gitops-02-argocd.yaml | oc apply -f -
 ----
 
 This command will create a namespace `{ocp-cluster-project}`, a default Application Project and an ArgoCD cluster. The configuration used is the default Operator configuration with some small improvements: Delegating authentication on the OpenShift integrated login, or implementing basic RBAC policies.
@@ -255,7 +255,7 @@ Create an Application resource using the following template:
 
 [source, bash]
 ----
-oc process -f templates/gitops-03-application-app.yaml | oc apply -f -
+oc process -f openshift/gitops-03-application-app.yaml | oc apply -f -
 ----
 
 
@@ -344,11 +344,11 @@ If you are planning to deploy your applications using Helm charts, most of the a
 OPERATOR_NAMESPACE="nexus"
 
 # Deploy operator
-oc process -f templates/nexus/01-operator.yaml \
+oc process -f openshift/nexus/01-operator.yaml \
   -p OPERATOR_NAMESPACE=$OPERATOR_NAMESPACE | oc apply -f -
 
 # Deploy application instance
-oc process -f templates/nexus/02-server.yaml \
+oc process -f openshift/nexus/02-server.yaml \
   -p OPERATOR_NAMESPACE=$OPERATOR_NAMESPACE \
   -p SERVER_NAME="nexus-server" | oc apply -f -
 ----
@@ -364,7 +364,7 @@ Create a Helm repository with the following steps:
 ** DeploymentPolicy: `Allow redeploy`.
 * Click on `Create repository`.
 
-If you don't want to use the console, you can use the `curl` command to create this repository. Check an example in the `auto-install-nexus.sh` script.
+NOTE: If you don't want to use the console, you can use the `curl` command to create this repository. Check an example in the `auto-install-nexus.sh` script.
 
 
 
