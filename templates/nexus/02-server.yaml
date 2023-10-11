@@ -9,6 +9,40 @@ metadata:
     openshift.io/provider-display-name: Red Hat, Inc.
     openshift.io/support-url: https://access.redhat.com
 objects:
+
+# Role with Privileged SA
+# Workaround for issue: https://github.com/sonatype/operator-nxrm3/issues/8
+- kind: ClusterRole
+  apiVersion: rbac.authorization.k8s.io/v1
+  metadata:
+    name: allow-privileged-scc
+    namespace: ${OPERATOR_NAMESPACE}
+  rules:
+    - verbs:
+        - use
+      apiGroups:
+        - security.openshift.io
+      resources:
+        - securitycontextconstraints
+      resourceNames:
+        - privileged
+
+# Rolebinding for default with Privileged SA
+# Workaround for issue: https://github.com/sonatype/operator-nxrm3/issues/8
+- kind: RoleBinding
+  apiVersion: rbac.authorization.k8s.io/v1
+  metadata:
+    name: nexus-allow-privileged-scc
+    namespace: ${OPERATOR_NAMESPACE}
+  subjects:
+    - kind: ServiceAccount
+      name: default
+      namespace: ${OPERATOR_NAMESPACE}
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: allow-privileged-scc
+
 - apiVersion: sonatype.com/v1alpha1
   kind: NexusRepo
   metadata:
@@ -99,6 +133,7 @@ objects:
         type: NodePort
       hostAliases: []
       podAnnotations: {}
+
 - apiVersion: route.openshift.io/v1
   kind: Route
   metadata:
@@ -114,6 +149,7 @@ objects:
       kind: Service
       name: ${SERVER_NAME}-sonatype-nexus-service
     wildcardPolicy: None
+    
 parameters:
 - name: OPERATOR_NAMESPACE
   description: "The project where the operator will be installed."
