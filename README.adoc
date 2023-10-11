@@ -325,7 +325,12 @@ https://blog.ramon-gordillo.dev/2021/03/gitops-with-argocd-and-hashicorp-vault-o
 
 [IMPORTANT]
 ====
-TL;DR: Execute the following script to auto-install a Nexus instance in your cluster: `./auto-install-nexus.sh`
+TL;DR: Execute the following script to auto-install a Nexus instance in your cluster:
+
+[source, bash]
+----
+./auto-install-nexus.sh
+----
 ====
 
 Nexus Repository OSS is an open-source repository that supports many artifact formats, including Docker, Java™, and npm. With the Nexus tool integration, pipelines in your toolchain can publish and retrieve versioned apps and their dependencies by using central repositories that are accessible from other environments.
