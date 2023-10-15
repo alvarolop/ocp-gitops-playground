@@ -35,20 +35,22 @@ endif::[]
 
 GitOps is an increasingly popular set of practices for managing the complexities of running hybrid multicluster Kubernetes infrastructure. GitOps centers on treating Git repositories as the single source of truth and applying Git workflows that have been consistently used for application development to infrastructure and application operators. 
 
-This repository provides a starting point to deploy many different operator and applications, such as GitOps, ArgoCD, Nexus, as well as your first application.
+This repository provides a starting point to deploy the Openshift GitOps operator as well as the first ArgoCD application. In the annex, you can also see how to deploy a Sonatype Nexus Repository to store your CI/CD artifacts such as `.jar`, helm charts, etc.
 
 == Installing ArgoCD and Openshift GitOps
 
-https://docs.openshift.com/container-platform/4.12/cicd/gitops/understanding-openshift-gitops.html[Red Hat OpenShift GitOps] Red Hat OpenShift GitOps uses https://argo-cd.readthedocs.io/en/stable[Argo CD] to manage specific cluster-scoped resources, including platform operators, optional Operator Lifecycle Manager (OLM) operators, and user management. Argo CD is a popular Cloud Native Computing Foundation (CNCF) open-source GitOps Kubernetes Operator for declarative configuration on Kubernetes clusters. 
+https://docs.openshift.com/gitops/1.10/understanding_openshift_gitops/about-redhat-openshift-gitops.html[Red Hat OpenShift GitOps] Red Hat OpenShift GitOps uses https://argo-cd.readthedocs.io/en/stable[Argo CD] to manage specific cluster-scoped resources, including platform operators, optional Operator Lifecycle Manager (OLM) operators, and user management. Argo CD is a popular Cloud Native Computing Foundation (CNCF) open-source GitOps Kubernetes Operator for declarative configuration on Kubernetes clusters. 
 
-Now, we are going to install the Red Hat OpenShift GitOps Operator to an OpenShift Container Platform cluster and log in to the Argo CD instance.
+=== The GitOps Operator
+
+First, let's install the OpenShift GitOps Operator on OCP and log in to the Argo CD instance.
 
 [source, bash]
 ----
 oc process -f openshift/01-operator.yaml | oc apply -f -
 ----
 
-After the installation is completed, the operator pods will be running in the `openshift-operators` project.
+NOTE: After the installation is completed, the operator pods will be running in the `openshift-operators` project.
 
 By default, the GitOps operator deploys an ArgoCD instance in the `openshift-gitops` project. To avoid that and have full control of the installation location, the https://access.redhat.com/solutions/6097231[following configuration] has been set in the previous OCP template.
 
@@ -59,16 +61,20 @@ By default, the GitOps operator deploys an ArgoCD instance in the `openshift-git
         env:
           - name: DISABLE_DEFAULT_ARGOCD_INSTANCE
             value: "true"
+          - name: DISABLE_DEFAULT_ARGOCD_CONSOLELINK
+            value: "true"
 ----
 
-Now, we are going to deploy our ArgoCD instance manually using the following template:
+=== The GitOps Instance
+
+Second, we are going to deploy our ArgoCD instance manually using the following template:
 
 [source, bash]
 ----
 oc process -f openshift/02-argocd.yaml | oc apply -f -
 ----
 
-This command will create a namespace `{ocp-cluster-project}`, a default Application Project and an ArgoCD cluster. The configuration used is the default Operator configuration with some small improvements: Delegating authentication on the OpenShift integrated login, or implementing basic RBAC policies.
+This command will create a namespace `{ocp-cluster-project}`, a default Application Project and an ArgoCD cluster. The configuration used is the default Operator configuration with some small improvements: Delegating authentication on the OpenShift integrated login, and implementing basic RBAC policies.
 
 Access the installed ArgoCD cluster using the following route:
 
@@ -81,71 +87,46 @@ oc get routes {ocp-cluster-name}-server -n {ocp-cluster-project} --template="htt
 
 === Configuring Authentication
 
-ArgoCD provides several ways of authenticating users. Here we will talk about the two easier to configure: The default admin user and the integration with Openshift login.
+NOTE: After the Red Hat OpenShift GitOps Operator is installed, Argo CD automatically creates a user with admin permissions. However, we have disabled Admin access in the ArgoCD RBAC using the property `.spec.disableAdmin`. 
 
-==== Using the OpenShift integrated login
+Dex is installed by default for all the Argo CD instances created by the Operator. You can configure Red Hat OpenShift GitOps to use Dex as the SSO authentication provider by setting the .spec.sso parameter. This is the current configuration:
 
-Enabling OpenShift integrated login is quite simple, but might not be perfectly documented as of today. It is already configured in the templates deployed in the section above. This is just for documentation purposes. 
-
-This feature implies changes at several levels:
-
-1. Set an environment variable at the operator level. This will tell the operator to enable Dex server for external authentication. https://github.com/redhat-developer/gitops-operator/issues/91#issuecomment-806660510[GH Issue], https://dev.to/camptocamp-ops/enable-openshift-login-on-argocd-from-gitops-2h9a[Blog post].
-+
 [source, yaml]
 ----
-    spec:
-      config:
-        env:
-          - name: DISABLE_DEX
-            value: "false"
+spec:
+  sso:
+    dex:
+      openShiftOAuth: true
+    provider: dex
 ----
 
-2. Configure the ArgoCD object to use the DEX Openshift login integration.
-+
+Dex uses the users and groups defined within the OpenShift Container Platform by checking the OAuth server provided by the platform. Use the following configuration so that every OCP `cluster-admin` is an ArgoCD admin:
+
 [source, yaml]
 ----
-    spec:
-      dex:
-        openShiftOAuth: true
-----
-
-3. Configure the ArgoCD object with the desired RBAC policies. For example, the simples option:
-+
-[source, yaml]
-----
-    spec:
-      rbac:
-        defaultPolicy: 'role:readonly'
-        policy: |
-          g, system:cluster-admins, role:admin
-        scopes: '[groups]'
+spec:
+  rbac:
+    defaultPolicy: 'role:admin'
+    policy: |
+      g, system:cluster-admins, role:admin
+      g, cluster-admins, role:admin
+    scopes: '[groups]'
 ----
 
 
-
-==== Using the default admin user
-
-
-Apart from using the Openshift integrated login, it is possible to use the built-in `admin` user. This user has been disabled in the ArgoCD template `template/gitops-02-argocd.yaml` configuring `.spec.disableAdmin` to `true`. Set it to `false` if you want to use it.
-
-Then, you will be able to login using ArgoCD user / password. Use user `admin` and obtain the password with the following command:
-[source, bash, subs="attributes"]
-----
-oc extract secret/{ocp-cluster-name}-cluster -n {ocp-cluster-project}  --to=-
-----
 
 
 
 === Configuring authorization
 
-CAUTION: Authorization in ArgoCD is a combination of configuring permissions at different levels. Here we present all three levels that you have to take care of in order to set proper authorization configuration. Please, read the three following sections carefully. 
+CAUTION: Authorization in ArgoCD is a combination of configuring permissions at different levels. Here we present all three levels that you have to take care of to set proper authorization configuration. Please, read the three following sections carefully. 
 
 
-==== Using ArgoCD managed namespaces
+==== ArgoCD managed namespaces
 
-The current version of Openshift GitOps supports deploying several clusters of ArgoCD in the same Openshift cluster. This feature is essential for organizations that want to implement multi-tenancy at the OCP level. With this feature available, now we have to distribute each namespace among the ArgoCD clusters. This is done using the `managed-by` label.
+Openshift GitOps supports several ArgoCD clusters in the same OCP. This feature is essential for organizations that want to implement full multi-tenancy at the ArgoCD cluster level. With this feature available, now we have to distribute each namespace among the ArgoCD clusters. This is done using the `argocd.argoproj.io/managed-by` label.
 
-Add a label to the namespace where your application is deployed in so that the Argo CD instance in the `{ocp-cluster-project}` namespace can manage it:
+Add a label to the application's namespace so that the Argo CD instance in the `{ocp-cluster-project}` namespace can manage it:
 
 [source, bash, subs="attributes"]
 ----
@@ -159,14 +140,30 @@ If you don't do so, the error message that you will see in the web console when 
 Namespace "<namespace>" for <resource> "<resource-name>" is not managed.
 ----
 
-Link to the https://docs.openshift.com/container-platform/4.8/cicd/gitops/configuring_argo_cd_to_recursively_sync_a_git_repository_with_your_application/configuring-an-openshift-cluster-by-deploying-an-application-with-cluster-configurations.html#creating-an-application-by-using-the-oc-tool_configuring-an-openshift-cluster-by-deploying-an-application-with-cluster-configurations[documentation]. 
+Link to the https://docs.openshift.com/gitops/1.10/declarative_clusterconfig/configuring-an-openshift-cluster-by-deploying-an-application-with-cluster-configurations.html#creating-an-application-by-using-the-oc-tool_configuring-an-openshift-cluster-by-deploying-an-application-with-cluster-configurations[documentation]. 
 
 
-==== Using namespace Isolation at cluster level (Service Account)
+==== Managing cluster-wide resources
 
-The ArgoCD instance have only privileges in its namespace which is `{ocp-cluster-project}`. For creating/updating/listing resources in other namespaces, it's mandatory to update the RBAC for its Service Account.
+Cluster resources are not bound to a namespace, and, therefore, are not affected by the previous label. For that reason, non-default ArgoCD instances cannot control them. If you want to do so, you need to instruct the GitOps operator to allow it for your cluster like in the following example:
 
-This section can be as complex as the security requirements that your organization demands for the ArgoCD deployment. The easiest solution for non-productive environments would be to grant cluster-admin rights to the service account that interacts with the k8s API.
+[source, yaml]
+----
+    spec:
+      config:
+        env:
+          - name: ARGOCD_CLUSTER_CONFIG_NAMESPACES
+            value: openshift-gitops, gitops
+----
+
+
+
+
+==== Using namespace Isolation at Service Account level
+
+The ArgoCD instance only has privileges in its namespace which is `{ocp-cluster-project}`. For creating/updating/listing resources in other namespaces, it's mandatory to update the RBAC for its Service Account.
+
+This section can be as complex as the security requirements that your organization demands for the ArgoCD deployment. The easiest solution for non-productive environments would be to grant `cluster-admin` rights to the service account that interacts with the k8s API.
 
 [source, bash, subs="attributes"]
 ----
@@ -174,7 +171,7 @@ oc adm policy add-cluster-role-to-user admin system:serviceaccount:{ocp-cluster-
 ----
 
 
-If you prefer to have a per-project tunning, you can use the configuration set in the template `template/gitops-03-application-app.yaml`, where we provide project admin rights to the same service account. This is also oriented to get a proper multi-tenancy configuration, like in the previous section. Check the template mentioned or use the following command:
+If you prefer to have a per-project tunning, you can use the configuration set in the template `openshift/11-application-app.yaml`, where we provide project admin rights to the SA. This is also oriented to get a proper multi-tenancy configuration, like in the previous section. Check the template mentioned or use the following command:
 
 [source, bash, subs="attributes"]
 ----
@@ -200,10 +197,14 @@ Extra documentation:
 ==== Using advanced RBAC configuration (SSO users)
 
 
-The RBAC feature enables restriction of access to Argo CD resources. Argo CD does not have its own user management system and has only one built-in user admin. 
+The RBAC feature enables restriction of access to Argo CD resources. Argo CD does not have its own user management system and has only one built-in admin user. 
 
 
-The RBAC configuration can be customized using the `ArgoCD.spec.rbac.policy `
+The RBAC configuration can be customized using the `ArgoCD.spec.rbac.policy` component
+
+
+
+
 
 
 
@@ -376,36 +377,12 @@ NOTE: If you don't want to use the console, you can use the `curl` command to cr
 
 OpenShift GitOps is shipped inclusive as part of the OpenShift Container Platform subscription and supported per the Red Hat production terms of support.
 
-Check the following table with GitOps versions and its equivalent to ArgoCD:
+* For the supported versions of GitOps on OCP, check the https://access.redhat.com/support/policy/updates/openshift#gitops[Red Hat OpenShift Container Platform Life Cycle Policy].
 
-[%header,format=csv]
-|===
-GitOps version,OCP version,ArgoCD version, Release date
-1.0 (TP), 4.6, 1.8, "Feb 12, 2021"
-1.1, 4.7, X, "April 15, 2021"
-1.2, 4.8, 2.0, "July 29, 2021"
-1.3 (Not GA yet), 4.9, 2.1, "October, 2021?"
-|===
+* For the versions of the upstream components, check the https://docs.openshift.com/gitops/1.10/release_notes/gitops-release-notes.html#GitOps-compatibility-support-matrix_gitops-release-notes[Compatibility and support matrix].
+
+* For the Tech Preview components, check the https://docs.openshift.com/gitops/1.10/release_notes/gitops-release-notes.html#GitOps-technology-preview_gitops-release-notes[Technology Preview features] section.
 
 
-For more information, check the https://access.redhat.com/support/policy/updates/openshift#gitops[Red Hat OpenShift Container Platform Life Cycle Policy].
+For more information check the Openshift GitOps https://docs.openshift.com/gitops/1.10/release_notes/gitops-release-notes.html[general Release Notes].
 
-
-Note that only the ArgoCD CRD is supported, the rest are Tech Preview in the latest version of Openshift GitOps:
-
-[%header,format=csv]
-|===
-Feature, Support in GitOps 1.2
-Argo CD, GA
-Argo CD ApplicationSet, TP
-Red Hat OpenShift GitOps Application Manager (kam), TP
-Red Hat OpenShift GitOps Service, TP
-|===
-
-For more information check the Openshift GitOps https://docs.openshift.com/container-platform/4.8/cicd/gitops/gitops-release-notes.html#support-matrix-1-2_gitops-release-notes[release notes].
-
-
-
-== Documentation and useful links
-
-https://github.com/argoproj/argo-cd
