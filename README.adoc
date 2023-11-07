@@ -208,55 +208,13 @@ The RBAC configuration can be customized using the `ArgoCD.spec.rbac.policy` com
 
 
 
-/ / TO DO
-
-https://argo-cd.readthedocs.io/en/stable/operator-manual/rbac/
-https://rtfm.co.ua/en/argocd-users-access-and-rbac/#Projects_and_roles
-https://argo-cd.readthedocs.io/en/stable/user-guide/projects/#configuring-rbac-with-projects
-https://github.com/argoproj/argo-cd/blob/master/assets/builtin-policy.csv
-
-https://docs.openshift.com/container-platform/4.8/authentication/understanding-authentication.html
-
-
-
-
-oc adm groups new {ocp-app-project}-developer
-oc adm groups new {ocp-app-project}-admin
-oc adm groups add-users {ocp-app-project}-admin alopezme
-oc adm groups add-users {ocp-app-project}-developer svidalur
-
-
-
-
-
-
-
-
-
-
 == Creating your first application
-
-
-[WARNING]
-====
-
-This section expects you to create the namespace for the demo application manually. In the following section you will see how to automate it with GitOps, too.
-
-Execute the following command:
-
-[source, bash, subs="attributes"]
-----
-oc new-project {ocp-app-project} --display-name="Pet Clinic app" --description="This project holds all the resources of the Pet Clinic application"
-----
-
-====
-
 
 Create an Application resource using the following template:
 
 [source, bash]
 ----
-oc process -f openshift/11-application-app.yaml | oc apply -f -
+oc process -f openshift/10-application-infra.yaml | oc apply -f -
 ----
 
 
@@ -265,26 +223,6 @@ oc process -f openshift/11-application-app.yaml | oc apply -f -
 
 
 
-
-
-
-
-== Managing your infra with Openshift GitOps
-
-
-[WARNING]
-====
-
-This section explains how to automate the management of Openshift infra resources like projects. Please, delete the project created manually in the previous section.
-
-Execute the following command:
-
-[source, bash, subs="attributes"]
-----
-oc delete project {ocp-app-project}
-----
-
-====
 
 
 

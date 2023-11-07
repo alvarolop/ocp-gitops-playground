@@ -107,7 +107,7 @@ objects:
           route:
             enabled: false
       rbac:
-        defaultPolicy: 'role:admin'
+        defaultPolicy: ''
         policy: |
           g, system:cluster-admins, role:admin
           g, cluster-admins, role:admin
