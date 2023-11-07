@@ -22,8 +22,8 @@ objects:
       source:
         directory:
           recurse: true
-        path: cluster
-        repoURL: https://github.com/alvarolop/openshift-gitops-getting-started
+        path: cluster-config-example
+        repoURL: https://github.com/alvarolop/ocp-gitops-playground.git
         targetRevision: HEAD
 parameters:
 - name: ARGOCD_NAMESPACE
