@@ -20,7 +20,7 @@ objects:
       text: ArgoCD
       applicationMenu:
         section: GitOps
-        imageURL: https://i.ibb.co/pZ0Lxdb/Logo-Red-Hat-Hat-Color-RGB.png
+        imageURL: https://d2q79iu7y748jz.cloudfront.net/s/_squarelogo/64x64/8d4f9b7860b3f7ef020f574990fe1841
 
 parameters:
 - name: ARGOCD_ROUTE
