@@ -16,7 +16,7 @@ objects:
       name: ${ARGOCD_NAMESPACE}
       annotations:
         openshift.io/description: "This project contains all the resources related to the ArgoCD installation"
-        openshift.io/display-name: "ArgoCD"
+        openshift.io/display-name: "GitOps"
       labels:
         openshift.io/cluster-monitoring: "true"
 
