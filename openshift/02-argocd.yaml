@@ -18,7 +18,7 @@ objects:
         openshift.io/description: "This project contains all the resources related to the ArgoCD installation"
         openshift.io/display-name: "ArgoCD"
       labels:
-        openshift.io/cluster-monitoring: true
+        openshift.io/cluster-monitoring: "true"
 
   - apiVersion: argoproj.io/v1alpha1
     kind: AppProject

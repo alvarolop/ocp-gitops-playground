@@ -18,7 +18,7 @@ objects:
         openshift.io/description: "This project contains all the resources related to the operator for GitOps"
         openshift.io/display-name: "OpenShift GitOps Operator"
       labels:
-        openshift.io/cluster-monitoring: true
+        openshift.io/cluster-monitoring: "true"
 
   - apiVersion: operators.coreos.com/v1
     kind: OperatorGroup
