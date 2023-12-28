@@ -1,0 +1,28 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: gitops-argocd
+  annotations:
+    description: Template to deploy a Red Hat Openshift GitOps ArgoCd cluster on OCP.
+    tags: argocd,gitops,operator
+    iconClass: icon-git
+    openshift.io/provider-display-name: Red Hat, Inc.
+    openshift.io/support-url: https://access.redhat.com
+objects:
+
+  - apiVersion: console.openshift.io/v1
+    kind: ConsoleLink
+    metadata:
+      name: gitops-argocd-console-link
+    spec:
+      href: '${ARGOCD_ROUTE}'
+      location: ApplicationMenu
+      text: ArgoCD
+      applicationMenu:
+        section: GitOps
+        imageURL: https://i.ibb.co/pZ0Lxdb/Logo-Red-Hat-Hat-Color-RGB.png
+
+parameters:
+- name: ARGOCD_ROUTE
+  description: "The project where the cluster will be installed."
+  required: true
