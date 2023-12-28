@@ -34,4 +34,4 @@ parameters:
 - name: OPERATOR_NAMESPACE
   description: "The project where the operator will be installed."
   required: false
-  value: "openshift-operators"
+  value: "openshift-gitops-operator"

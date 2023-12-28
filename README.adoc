@@ -1,4 +1,4 @@
-= Red Hat Openshift GitOps Demo
+= Red Hat Openshift GitOps Playground
 Álvaro López Medina <alopezme@redhat.com>
 v1.0, 2021-10
 // Metadata
