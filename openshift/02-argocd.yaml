@@ -20,6 +20,32 @@ objects:
       labels:
         openshift.io/cluster-monitoring: "true"
 
+  - kind: ClusterRoleBinding
+    apiVersion: rbac.authorization.k8s.io/v1
+    metadata:
+      name: ${ARGOCD_CLUSTER_NAME}-argocd-application-controller-cluster-admin
+    subjects:
+      - kind: ServiceAccount
+        name: ${ARGOCD_CLUSTER_NAME}-argocd-application-controller
+        namespace: ${ARGOCD_NAMESPACE}
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: cluster-admin
+
+  - kind: ClusterRoleBinding
+    apiVersion: rbac.authorization.k8s.io/v1
+    metadata:
+      name: ${ARGOCD_CLUSTER_NAME}-applicationset-controller-cluster-admin
+    subjects:
+      - kind: ServiceAccount
+        name: ${ARGOCD_CLUSTER_NAME}-applicationset-controller
+        namespace: ${ARGOCD_NAMESPACE}
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: cluster-admin
+
   - apiVersion: argoproj.io/v1alpha1
     kind: AppProject
     metadata:
