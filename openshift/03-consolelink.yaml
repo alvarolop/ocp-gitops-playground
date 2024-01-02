@@ -13,16 +13,24 @@ objects:
   - apiVersion: console.openshift.io/v1
     kind: ConsoleLink
     metadata:
-      name: gitops-argocd-console-link
+      name: ${ARGOCD_NAMESPACE}-${ARGOCD_CLUSTER_NAME}
     spec:
-      href: '${ARGOCD_ROUTE}'
+      href: ${ARGOCD_ROUTE}
       location: ApplicationMenu
       text: ArgoCD
       applicationMenu:
         section: GitOps
-        imageURL: https://d2q79iu7y748jz.cloudfront.net/s/_squarelogo/64x64/8d4f9b7860b3f7ef020f574990fe1841
+        imageURL: https://raw.githubusercontent.com/argoproj/argo-cd/master/docs/assets/argo.png
 
 parameters:
 - name: ARGOCD_ROUTE
   description: "The project where the cluster will be installed."
   required: true
+- name: ARGOCD_NAMESPACE
+  description: "The project where the cluster will be installed."
+  required: false
+  value: "gitops"
+- name: ARGOCD_CLUSTER_NAME
+  description: "The name of the ArgoCD cluster."
+  required: false
+  value: "argocd-cluster"
