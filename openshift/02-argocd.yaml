@@ -67,6 +67,7 @@ objects:
       name: ${ARGOCD_CLUSTER_NAME}
       namespace: ${ARGOCD_NAMESPACE}
     spec:
+      kustomizeBuildOptions: '--enable-helm --enable-alpha-plugins'
       server:
         autoscale:
           enabled: false
@@ -102,9 +103,9 @@ objects:
         route:
           enabled: false
       monitoring:
-        enabled: false
+        enabled: true
       notifications:
-        enabled: false
+        enabled: true
       prometheus:
         enabled: false
         ingress:
