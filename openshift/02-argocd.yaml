@@ -10,8 +10,8 @@ metadata:
     openshift.io/support-url: https://access.redhat.com
 objects:
 
-  - apiVersion: project.openshift.io/v1
-    kind: Project
+  - apiVersion: v1
+    kind: Namespace
     metadata:
       name: ${ARGOCD_NAMESPACE}
       annotations:

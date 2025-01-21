@@ -4,7 +4,7 @@ set -e
 
 # Set your environment variables here
 OPERATOR_NAMESPACE="openshift-gitops-operator"
-ARGOCD_NAMESPACE="gitops"
+ARGOCD_NAMESPACE="openshift-gitops"
 ARGOCD_CLUSTER_NAME="argocd"
 
 #############################
