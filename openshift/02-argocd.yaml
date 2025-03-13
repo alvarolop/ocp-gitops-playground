@@ -115,6 +115,7 @@ objects:
     spec:
       kustomizeBuildOptions: '--enable-helm --enable-alpha-plugins'
       resourceTrackingMethod: annotation # Needed because InferenceService create route with label app.kubernetes.io/instance so try to manage it and delete it
+      # https://www.redhat.com/en/blog/gitops-quality-life-tips
       extraConfig:
         globalProjects: |-
           - labelSelector:
