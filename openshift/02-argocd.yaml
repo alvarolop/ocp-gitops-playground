@@ -241,6 +241,7 @@ objects:
       # https://access.redhat.com/solutions/7015069
       resourceHealthChecks:
       # https://argo-cd.readthedocs.io/en/stable/operator-manual/health/#argocd-app
+      # If you are using app-of-apps pattern and orchestrating synchronization using sync waves
       - group: argoproj.io
         kind: Application
         check: |
@@ -330,6 +331,89 @@ objects:
               end
             end
           end
+          hs.status = "Progressing"
+          hs.message = "Waiting for certificate"
+          return hs
+      # https://github.com/argoproj/argo-cd/tree/master/resource_customizations/cert-manager.io
+      - group: cert-manager.io
+        kind: ClusterIssuer
+        check: |
+          local hs = {}
+          if obj.status ~= nil then
+            if obj.status.conditions ~= nil then
+              for i, condition in ipairs(obj.status.conditions) do
+                if condition.type == "Ready" and condition.status == "False" then
+                  hs.status = "Degraded"
+                  hs.message = condition.message
+                  return hs
+                end
+                if condition.type == "Ready" and condition.status == "True" then
+                  hs.status = "Healthy"
+                  hs.message = condition.message
+                  return hs
+                end
+              end
+            end
+          end
+
+          hs.status = "Progressing"
+          hs.message = "Initializing ClusterIssuer"
+          return hs
+      - group: cert-manager.io
+        kind: Issuer
+        check: |
+          local hs = {}
+          if obj.status ~= nil then
+            if obj.status.conditions ~= nil then
+              for i, condition in ipairs(obj.status.conditions) do
+                if condition.type == "Ready" and condition.status == "False" then
+                  hs.status = "Degraded"
+                  hs.message = condition.message
+                  return hs
+                end
+                if condition.type == "Ready" and condition.status == "True" then
+                  hs.status = "Healthy"
+                  hs.message = condition.message
+                  return hs
+                end
+              end
+            end
+          end
+
+          hs.status = "Progressing"
+          hs.message = "Initializing issuer"
+          return hs
+      - group: cert-manager.io
+        kind: Certificate
+        check: |
+          local hs = {}
+          if obj.status ~= nil then
+            if obj.status.conditions ~= nil then
+
+              -- Always Handle Issuing First to ensure consistent behaviour
+              for i, condition in ipairs(obj.status.conditions) do
+                if condition.type == "Issuing" and condition.status == "True" then
+                  hs.status = "Progressing"
+                  hs.message = condition.message
+                  return hs
+                end
+              end
+
+              for i, condition in ipairs(obj.status.conditions) do
+                if condition.type == "Ready" and condition.status == "False" then
+                  hs.status = "Degraded"
+                  hs.message = condition.message
+                  return hs
+                end
+                if condition.type == "Ready" and condition.status == "True" then
+                  hs.status = "Healthy"
+                  hs.message = condition.message
+                  return hs
+                end
+              end
+            end
+          end
+
           hs.status = "Progressing"
           hs.message = "Waiting for certificate"
           return hs
