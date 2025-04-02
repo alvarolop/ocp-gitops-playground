@@ -1,0 +1,24 @@
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: openshift-gitops-operator
+  namespace: openshift-gitops-operator
+  annotations:
+    argocd.argoproj.io/sync-wave: "-05"
+spec:
+  channel: latest
+  installPlanApproval: Automatic 
+  name: openshift-gitops-operator
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
+  # https://github.com/redhat-developer/gitops-operator/blob/master/docs/OpenShift%20GitOps%20Usage%20Guide.md#setting-environment-variables
+  # https://developers.redhat.com/articles/2023/03/06/5-global-environment-variables-provided-openshift-gitops#5_environment_variables__details
+  config:
+    env:
+      - name: DISABLE_DEFAULT_ARGOCD_INSTANCE
+        value: "true"
+      - name: DISABLE_DEFAULT_ARGOCD_CONSOLELINK
+        value: "true"
+      - name: ARGOCD_CLUSTER_CONFIG_NAMESPACES
+        value: openshift-gitops, gitops

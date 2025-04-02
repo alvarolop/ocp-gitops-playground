@@ -1,0 +1,9 @@
+# Variable files for ArgoCD
+global:
+
+  namespace: openshift-gitops
+  clusterName: argocd-cluster 
+
+consoleLink:
+
+  route: $CHANGE_ME

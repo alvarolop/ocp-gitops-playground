@@ -1,0 +1,12 @@
+---
+apiVersion: console.openshift.io/v1
+kind: ConsoleLink
+metadata:
+  name: {{ .Values.global.namespace }}-{{ .Values.global.clusterName }}
+spec:
+  href: ${ARGOCD_ROUTE}
+  location: ApplicationMenu
+  text: ArgoCD
+  applicationMenu:
+    section: GitOps
+    imageURL: https://raw.githubusercontent.com/argoproj/argo-cd/master/docs/assets/argo.png
