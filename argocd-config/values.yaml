@@ -3,3 +3,6 @@ global:
   namespace: openshift-gitops
   clusterName: argocd-cluster
   clusterDomain: $CLUSTER_DOMAIN
+
+namespace:
+  enabled: false
