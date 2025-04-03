@@ -32,7 +32,7 @@ fi
 # Install Nexus operator
 echo -e "\n[1/3]Install Nexus operator"
 
-oc process -f openshift/nexus/01-operator.yaml \
+oc process -f nexus/01-operator.yaml \
     -p OPERATOR_NAMESPACE=$OPERATOR_NAMESPACE | oc apply -f -
 
 echo -n "Waiting for pods ready..."
@@ -40,7 +40,7 @@ while [[ $(oc get pods -l name=nxrm-operator-certified -n $OPERATOR_NAMESPACE -o
 
 # Deploy the Nexus repository manager instance
 echo -e "\n[2/3]Deploy the Nexus repository manager instance"
-oc process -f openshift/nexus/02-server.yaml \
+oc process -f nexus/02-server.yaml \
     -p OPERATOR_NAMESPACE=$OPERATOR_NAMESPACE \
     -p SERVER_NAME="$NEXUS_SERVER_NAME" | oc apply -f -
 
