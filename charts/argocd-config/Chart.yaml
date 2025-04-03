@@ -1,6 +1,8 @@
 apiVersion: v2
-name: argocd-chart
+name: argocd-config
 description: A Helm chart for Kubernetes to deploy ArgoCD using OpenShift GitOps
+
+icon: https://raw.githubusercontent.com/argoproj/argo-cd/master/docs/assets/argo.png
 
 # A chart can be either an 'application' or a 'library' chart.
 #
