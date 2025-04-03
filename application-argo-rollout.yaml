@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argo-rollout
+  namespace: openshift-gitops
+spec:
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  sources:
+    - repoURL: https://github.com/alvarolop/ocp-gitops-playground.git
+      path: argocd-config
+      helm:
+        valueFiles: 
+          - $values/values.yaml
+      targetRevision: main
+    - ref: values
+      repoURL: https://github.com/alvarolop/ocp-on-aws.git
+      path: .
+      targetRevision: HEAD
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+    syncOptions: []

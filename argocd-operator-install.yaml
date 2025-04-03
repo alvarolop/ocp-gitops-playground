@@ -36,9 +36,9 @@ spec:
       - name: DISABLE_DEFAULT_ARGOCD_CONSOLELINK
         value: "true"
       - name: ARGOCD_CLUSTER_CONFIG_NAMESPACES
-        value: openshift-gitops, gitops
+        value: openshift-gitops
       # https://docs.redhat.com/en/documentation/red_hat_openshift_gitops/1.14/html-single/release_notes/index#RHBA-2024-8625-gitops-1-14-1-security-update-advisory_gitops-release-notes
       - name: NAMESPACE_SCOPED_ARGO_ROLLOUTS
         value: 'false'
       - name: CLUSTER_SCOPED_ARGO_ROLLOUTS_NAMESPACES
-        value: openshift-gitops, gitops
+        value: openshift-gitops,test-gitops
