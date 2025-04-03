@@ -37,6 +37,19 @@ GitOps is an increasingly popular set of practices for managing the complexities
 
 This repository provides a starting point to deploy the Openshift GitOps operator as well as the first ArgoCD application. In the annex, you can also see how to deploy a Sonatype Nexus Repository to store your CI/CD artifacts such as `.jar`, helm charts, etc.
 
+
+== Helm repository
+
+This GitHub repository also acts as a Helm Repository that only serves the `argocd-config` Helm Package. If I generate a new version of the chart, I just run the following commands:
+
+[source, bash]
+----
+helm package argocd-config/
+helm repo index --url https://alvarolop.github.io/ocp-gitops-playground/ .
+----
+
+And then push the changes to the repo.
+
 == Installing ArgoCD and Openshift GitOps
 
 https://docs.openshift.com/gitops/1.10/understanding_openshift_gitops/about-redhat-openshift-gitops.html[Red Hat OpenShift GitOps] Red Hat OpenShift GitOps uses https://argo-cd.readthedocs.io/en/stable[Argo CD] to manage specific cluster-scoped resources, including platform operators, optional Operator Lifecycle Manager (OLM) operators, and user management. Argo CD is a popular Cloud Native Computing Foundation (CNCF) open-source GitOps Kubernetes Operator for declarative configuration on Kubernetes clusters. 

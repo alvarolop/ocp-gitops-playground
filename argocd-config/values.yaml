@@ -2,8 +2,5 @@
 global:
 
   namespace: openshift-gitops
-  clusterName: argocd-cluster 
-
-consoleLink:
-
-  route: $CHANGE_ME
+  clusterName: argocd-cluster
+  clusterDomain: $CLUSTER_DOMAIN
