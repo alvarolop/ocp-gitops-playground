@@ -194,68 +194,6 @@ Extra documentation:
 
 
 
-==== Using advanced RBAC configuration (SSO users)
-
-
-The RBAC feature enables restriction of access to Argo CD resources. Argo CD does not have its own user management system and has only one built-in admin user. 
-
-
-The RBAC configuration can be customized using the `ArgoCD.spec.rbac.policy` component
-
-
-
-
-
-
-
-== Creating your first application
-
-Create an Application resource using the following template:
-
-[source, bash]
-----
-oc process -f openshift/10-application-infra.yaml | oc apply -f -
-----
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-== Storing secrets content outside of git
-
-https://cloud.redhat.com/blog/how-to-use-hashicorp-vault-and-argo-cd-for-gitops-on-openshift
-
-https://blog.ramon-gordillo.dev/2021/03/gitops-with-argocd-and-hashicorp-vault-on-kubernetes/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -268,7 +206,7 @@ TL;DR: Execute the following script to auto-install a Nexus instance in your clu
 
 [source, bash]
 ----
-./auto-install-nexus.sh
+./nexus-auto-install.sh
 ----
 ====
 
@@ -304,23 +242,3 @@ Create a Helm repository with the following steps:
 * Click on `Create repository`.
 
 NOTE: If you don't want to use the console, you can use the `curl` command to create this repository. Check an example in the `auto-install-nexus.sh` script.
-
-
-
-
-
-
-
-== Openshift GitOps support and deployed versions
-
-OpenShift GitOps is shipped inclusive as part of the OpenShift Container Platform subscription and supported per the Red Hat production terms of support.
-
-* For the supported versions of GitOps on OCP, check the https://access.redhat.com/support/policy/updates/openshift#gitops[Red Hat OpenShift Container Platform Life Cycle Policy].
-
-* For the versions of the upstream components, check the https://docs.openshift.com/gitops/1.10/release_notes/gitops-release-notes.html#GitOps-compatibility-support-matrix_gitops-release-notes[Compatibility and support matrix].
-
-* For the Tech Preview components, check the https://docs.openshift.com/gitops/1.10/release_notes/gitops-release-notes.html#GitOps-technology-preview_gitops-release-notes[Technology Preview features] section.
-
-
-For more information check the Openshift GitOps https://docs.openshift.com/gitops/1.10/release_notes/gitops-release-notes.html[general Release Notes].
-
