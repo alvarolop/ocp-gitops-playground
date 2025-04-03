@@ -1,6 +1,5 @@
 # Variable files for ArgoCD
 global:
-
   namespace: openshift-gitops
   clusterName: argocd-cluster
   clusterDomain: $CLUSTER_DOMAIN

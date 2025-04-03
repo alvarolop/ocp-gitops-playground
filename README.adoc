@@ -44,6 +44,7 @@ This GitHub repository also acts as a Helm Repository that only serves the `argo
 
 [source, bash]
 ----
+helm lint argocd-config/
 helm package argocd-config/
 helm repo index --url https://alvarolop.github.io/ocp-gitops-playground/ .
 ----
