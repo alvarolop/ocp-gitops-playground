@@ -4,7 +4,7 @@ kind: ConsoleLink
 metadata:
   name: {{ .Values.global.namespace }}-{{ .Values.global.clusterName }}
 spec:
-  href: "https://{{ .Values.global.clusterName }}-{{ .Values.global.namespace }}.apps.{{ .Values.global.clusterDomain }}"
+  href: "https://{{ .Values.global.clusterName }}-server-{{ .Values.global.namespace }}.apps.{{ .Values.global.clusterDomain }}"
   location: ApplicationMenu
   text: ArgoCD
   applicationMenu:
