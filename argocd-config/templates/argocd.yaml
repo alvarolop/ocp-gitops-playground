@@ -21,7 +21,7 @@ spec:
   server:
     autoscale:
       enabled: false
-    enableRolloutsUI: true
+    enableRolloutsUI: {{ .Values.argoRollout.enabled }}
     grpc:
       ingress:
         enabled: false

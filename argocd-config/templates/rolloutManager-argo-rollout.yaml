@@ -1,0 +1,11 @@
+{{- if .Values.argoRollout.enabled }}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: RolloutManager
+metadata:
+  name: argo-rollout
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    example: basic
+spec: {}
+{{- end }}

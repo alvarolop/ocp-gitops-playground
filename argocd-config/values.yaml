@@ -6,3 +6,6 @@ global:
 
 namespace:
   enabled: false
+
+argoRollout:
+  enabled: false
