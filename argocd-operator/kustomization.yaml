@@ -1,7 +1,0 @@
----
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-resources:
-  - ns-openshift-gitops-operator.yaml
-  - og-openshift-gitops-operator.yaml
-  - sub-openshift-gitops-operator.yaml
