@@ -3,13 +3,13 @@ entries:
   argocd-config:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2025-05-26T15:25:31.940243768+02:00"
+    created: "2025-05-26T15:26:24.05458131+02:00"
     description: A Helm chart for Kubernetes to deploy ArgoCD using OpenShift GitOps
-    digest: 227a17f281ff4d0cc7ee513bd12d321da06d28c1f805e31e289a11cd2d3672c3
+    digest: 7267a00f06c7738852aebed743b4e3638bb66fc4727760b7346a0f5dbe0e05dc
     icon: https://raw.githubusercontent.com/argoproj/argo-cd/master/docs/assets/argo.png
     name: argocd-config
     type: application
     urls:
-    - https://alvarolop.github.io/ocp-gitops-playground/argocd-config-0.1.6.tgz
-    version: 0.1.6
-generated: "2025-05-26T15:25:31.939781035+02:00"
+    - https://alvarolop.github.io/ocp-gitops-playground/argocd-config-0.1.7.tgz
+    version: 0.1.7
+generated: "2025-05-26T15:26:24.054298404+02:00"
