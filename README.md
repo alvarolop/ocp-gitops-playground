@@ -62,6 +62,22 @@ And then push the changes to the repo.
 
 
 
+## Argo Rollouts
+
+**Argo Rollouts** is a Kubernetes controller and set of CRDs that provide advanced deployment capabilities such as blue-green, canary, and progressive delivery. It integrates with Argo CD to manage the lifecycle of applications. Here is an overview of all the components that take part in a deployment managed by Argo Rollouts.
+
+![Argo Rollouts Architecture](https://argo-rollouts.readthedocs.io/en/stable/architecture-assets/argo-rollout-architecture.png)
+
+
+For a satisfying experience with Argo Rollouts, you need to install three components:
+
+1. **Argo Rollouts Controller**: This is the main controller that manages the rollout of applications. You can find the rollout manager configuration file in the [`argocd-config/templates/rolloutManager-argo-rollout.yaml`](argocd-config/templates/rolloutManager-argo-rollout.yaml) file of this repository.
+2. **Argo Rollouts CLI**: This is a command-line interface that allows you to interact with the Argo Rollouts controller. Install the CLI using the commands from the following [link](https://docs.redhat.com/en/documentation/red_hat_openshift_gitops/1.16/html-single/argo_rollouts/index#gitops-installing-argo-rollouts-cli-on-linux_using-argo-rollouts-for-progressive-deployment-delivery).
+3. **Argo Rollouts UI**: This is a web-based user interface that provides a visual representation of the rollouts in the Argo CD dashboard. You can enable the UI by setting the `enableRolloutsUI` parameter to `true` in the ArgoCD instance configuration. 
+
+
+
+
 ## Things you should know!
 
 ### Configuring Authentication
