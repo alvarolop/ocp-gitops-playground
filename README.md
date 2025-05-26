@@ -104,7 +104,7 @@ spec:
       g, system:cluster-admins, role:admin
       g, cluster-admins, role:admin
     scopes: '[groups]'
-```yaml
+```
 
 
 
