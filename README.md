@@ -4,7 +4,7 @@
 
 GitOps is an increasingly popular set of practices for managing the complexities of running hybrid multicluster Kubernetes infrastructure. GitOps centers on treating Git repositories as the single source of truth and applying Git workflows that have been consistently used for application development to infrastructure and application operators. 
 
-https://docs.redhat.com/en/documentation/red_hat_openshift_gitops/1.16/html/understanding_openshift_gitops/about-redhat-openshift-gitops[Red Hat OpenShift GitOps] Red Hat OpenShift GitOps uses https://argo-cd.readthedocs.io/en/stable[Argo CD] to manage cluster-scoped resources. Argo CD is a popular Cloud Native Computing Foundation (CNCF) open-source GitOps Kubernetes Operator for declarative configuration on Kubernetes clusters. 
+[Red Hat OpenShift GitOps](https://docs.redhat.com/en/documentation/red_hat_openshift_gitops/1.16/html/understanding_openshift_gitops/about-redhat-openshift-gitops) Red Hat OpenShift GitOps uses [Argo CD](https://argo-cd.readthedocs.io/en/stable) to manage cluster-scoped resources. Argo CD is a popular Cloud Native Computing Foundation (CNCF) open-source GitOps Kubernetes Operator for declarative configuration on Kubernetes clusters. 
 
 ## Installing Openshift GitOps Operator
 
@@ -148,14 +148,14 @@ oc adm policy add-role-to-user admin system:serviceaccount:openshift-gitops:argo
 ```
 
 
-Obviously, you can even set a finer tunning by creating a custom `Role` and `RoleBinding` to specify the resources that each ArgoCD will be allowed to manage per namespace. This https://access.redhat.com/solutions/5875661[KCS] gives you an example of how to configure one of these `RoleBindings`.
+Obviously, you can even set a finer tunning by creating a custom `Role` and `RoleBinding` to specify the resources that each ArgoCD will be allowed to manage per namespace. This [KCS](https://access.redhat.com/solutions/5875661) gives you an example of how to configure one of these `RoleBindings`.
 
 
 
 Extra documentation:
 
-* https://blog.andyserver.com/2020/12/argocd-namespace-isolation[Deep-dive blog post] about namespace isolation using the SA `RoleBindings`.
-* https://github.com/redhat-developer/gitops-operator/issues/116[Upstream issue] regarding permissions for the ArgoCD instance.
+* [Deep-dive blog post](https://blog.andyserver.com/2020/12/argocd-namespace-isolation) about namespace isolation using the SA `RoleBindings`.
+* [Upstream issue](https://github.com/redhat-developer/gitops-operator/issues/116) regarding permissions for the ArgoCD instance.
 
 
 
