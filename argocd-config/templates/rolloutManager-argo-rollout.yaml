@@ -5,7 +5,20 @@ kind: RolloutManager
 metadata:
   name: argo-rollout
   namespace: {{ .Values.global.namespace }}
-  labels:
-    example: basic
-spec: {}
+spec:
+  ha:
+    enabled: true
+  namespaceScoped: false
+  nodePlacement:
+    {{- if .Values.runOnInfra.enabled }}
+      nodeSelector:
+        node-role.kubernetes.io/infra: ""
+    {{- end }}
+    tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/infra
+        value: reserved
+      - effect: NoExecute
+        key: node-role.kubernetes.io/infra
+        value: reserved
 {{- end }}
