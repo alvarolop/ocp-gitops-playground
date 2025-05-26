@@ -12,3 +12,4 @@ runOnInfra:
 
 argoRollout:
   enabled: false
+  ha: false

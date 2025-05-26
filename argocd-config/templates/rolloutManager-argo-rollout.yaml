@@ -7,7 +7,7 @@ metadata:
   namespace: {{ .Values.global.namespace }}
 spec:
   ha:
-    enabled: true
+    enabled: {{ .Values.argoRollout.ha }}
   namespaceScoped: false
   nodePlacement:
     {{- if .Values.runOnInfra.enabled }}
