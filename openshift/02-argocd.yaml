@@ -95,8 +95,8 @@ objects:
     metadata:
       name: product-catalog
       namespace: ${ARGOCD_NAMESPACE}
-    labels:
-      argocd.argoproj.io/project-inherit: global
+      labels:
+        argocd.argoproj.io/project-inherit: global
     spec:
       clusterResourceWhitelist:
         - group: '*'

@@ -4,8 +4,8 @@ kind: AppProject
 metadata:
   name: product-catalog
   namespace: {{ .Values.global.namespace }}
-labels:
-  argocd.argoproj.io/project-inherit: global
+  labels:
+    argocd.argoproj.io/project-inherit: global
 spec:
   clusterResourceWhitelist:
     - group: '*'
